@@ -4,7 +4,7 @@ import { graphql} from '@apollo/client/react/hoc';
 import compose from 'lodash.flowright';
 
 import classes from './productCardElement.module.css';
-
+import { getCurrentCurrencyQuery} from '../../graphql/reactivities/state';
 import { 
   getProductQuery,
   getCurrenciesQuery,
@@ -14,6 +14,8 @@ class Product extends Component {
 
   displayProduct(){
   const {product} = this.props;
+  const {currentCurrency} = this.props.getCurrentCurrencyQuery
+  console.log(currentCurrency)
   if(product){
     return(
       <div className={classes.ProductCard}>
@@ -29,7 +31,7 @@ class Product extends Component {
               {/* <div className={classes.ProductCardCurrency}>{product.prices[0].currency.symbol}</div> */}
                 {/*<div className={classes.ProductCardAmount}>{product.prices[0].amount}</div> */}
               <div className={classes.ProductCardCurrency}>{this.props.selectedCurrency.symbol}</div>
-              <div className={classes.ProductCardAmount}>{product.prices.find((price)=>price.currency.label===this.props.selectedCurrency.label).amount}</div>
+              <div className={classes.ProductCardAmount}>{product.prices.find((price)=>price.currency.label===currentCurrency.label).amount}</div>
             </div>
           </div>
         </div>
@@ -83,4 +85,5 @@ export default compose(
     }
   }),
   graphql(getCurrenciesQuery,{name:'getCurrenciesQuery'}),
+  graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'}),
 )(Product)

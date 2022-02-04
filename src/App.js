@@ -13,13 +13,6 @@ import Category from './components/categories/Category';
 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedCategory:"tech",
-      selectedCurrency:{label:"USD",symbol:'$'}
-    }
-  }
   render(){
     const {currentCategory} = this.props.getCurrentCategoryQuery
     const {currentCurrency} = this.props.getCurrentCurrencyQuery

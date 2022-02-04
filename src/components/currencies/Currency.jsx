@@ -17,11 +17,17 @@ class Currency extends Component{
        })
       )
     }
+  
+  setCurrentCurrency(obj){
+    const {currencies} = this.props.getCurrenciesQuery
+    var currency = currencies.find(item=>item.label===obj.label)
+    currentCurrency(currency)
+  }
 
   render(){
     return(
       <div className="actions">
-        <select className="currency" onChange={(e)=>currentCurrency({label:e.target.value})}> 
+        <select className="currency" onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
           {this.displayCurrencies()}
         </select>
       </div>

@@ -21,9 +21,7 @@ class Category extends Component{
       const {category} = this.props.getCategoryQuery;
       const {currentCategory} = this.props.getCurrentCategoryQuery
       const {currentCurrency} = this.props.getCurrentCurrencyQuery
-      console.log('currencies',this.props)
       if(category){
-        console.log('categorie:',category)
         return(
           <div className={classes.category} >
               <div className={classes.categoryName}>

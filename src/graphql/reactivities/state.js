@@ -1,6 +1,6 @@
 import { makeVar, gql } from "@apollo/client";
 
-export const currentCurrency = makeVar({label:"USD"});
+export const currentCurrency = makeVar({label:"USD",symbol:'$'});
 
 export const currentCategory = makeVar("all");
 
