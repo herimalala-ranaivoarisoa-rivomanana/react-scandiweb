@@ -1,0 +1,89 @@
+import {gql} from '@apollo/client';
+
+const getCategoriesQuery=gql`{
+  category {
+    name
+  }
+}`
+
+const getCategoryQuery=gql`
+query($name:String){
+  categories (name:$name){
+    name
+    products {
+      id
+      name
+      inStock
+      gallery
+      description
+      category
+      attributes {
+        id
+        name
+        type
+        items {
+          id
+          value
+          displayValue
+        }
+      }
+      prices {
+        currency {
+          label
+          symbol
+        }
+        amount
+      }
+      brand
+    }
+  }
+}`
+const getBooksQuery = gql`{
+  books{
+    name
+    id
+  }
+}`
+
+const getBookQuery=gql`
+query($id:ID){
+  book(id:$id){
+    id
+    name
+    genre
+    author{
+      id
+      name
+      age
+      books{
+        name
+        id
+      }
+    }
+  }
+}
+`
+
+const getAuthorsQuery = gql`{
+  authors{
+    name
+    id
+  }
+}`
+
+const addBookMutation = gql`
+  mutation AddBook($name:String!,$genre:String!,$authorId:ID!){
+    addBook(name:$name,genre:$genre,authorId:$authorId){
+      name
+      id
+    }
+}`
+
+export {
+  getCategoriesQuery,
+  getCategoryQuery,
+  getBooksQuery,
+  getBookQuery,
+  getAuthorsQuery,
+  addBookMutation,
+  }
