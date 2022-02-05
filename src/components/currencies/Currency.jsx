@@ -22,12 +22,16 @@ class Currency extends Component{
     const {currencies} = this.props.getCurrenciesQuery
     var currency = currencies.find(item=>item.label===obj.label)
     currentCurrency(currency)
+    console.log(currency)
+    localStorage.setItem('currentCurrency', JSON.stringify(currency))
   }
 
   render(){
+    const {symbol} = currentCurrency()
     return(
       <div className="actions">
         <select className="currency" onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
+        <option value="" selected disabled hidden>{symbol}</option>
           {this.displayCurrencies()}
         </select>
       </div>

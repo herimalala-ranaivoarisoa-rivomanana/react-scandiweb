@@ -1,8 +1,8 @@
 import { makeVar, gql } from "@apollo/client";
 
-export const currentCurrency = makeVar({label:"USD",symbol:'$'});
+export const currentCurrency = makeVar(JSON.parse(localStorage.getItem('currentCurrency'))||{label:"USD",symbol:'$'});
 
-export const currentCategory = makeVar("all");
+export const currentCategory = makeVar(JSON.parse(localStorage.getItem('currentCategory'))||"all");
 
 export const getCurrentCurrencyQuery = gql`
   query getCurrentCurrency{

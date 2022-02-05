@@ -15,13 +15,17 @@ class NavCategory extends Component{
               {
                 data.categories.map(category=>{
                 return(
-                  <li key={category.name} onClick={(e)=>currentCategory(category.name)}>{category.name}</li>
+                  <li key={category.name} onClick={(e)=>this.setCategory(category.name)}>{category.name}</li>
                 )
               })
                }
             </ul>
           </div>
       )
+    }
+    setCategory(name){
+      currentCategory(name)
+      localStorage.setItem('currentCategory', JSON.stringify(name))
     }
   render(){
     return(
