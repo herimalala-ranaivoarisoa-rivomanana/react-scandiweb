@@ -63,6 +63,11 @@ justify-content:space-between;
   cursor: pointer;
 }
 
+.active{
+  color:var(--c-primary);
+  border-bottom: 1px solid var(--c-primary)
+}
+
 .navigation li:active{
   color:var(--c-primary);
   border-bottom: 1px solid var(--c-primary);

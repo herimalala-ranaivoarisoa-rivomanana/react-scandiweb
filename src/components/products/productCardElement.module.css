@@ -89,6 +89,7 @@ text-align: center;
 }
 
 .ProductCardImage img{
+  opacity:95%;
   width:100%;
 }
 

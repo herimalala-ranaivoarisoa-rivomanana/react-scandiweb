@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {BrowserRouter, Routes, Route, Link} from  'react-router-dom'
+import {BrowserRouter, Routes, Route} from  'react-router-dom'
 import ProductPage from './pages/productLandingPage'
 class App extends Component {
   render(){

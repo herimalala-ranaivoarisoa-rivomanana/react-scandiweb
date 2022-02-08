@@ -15,7 +15,7 @@ class NavCategory extends Component{
               {
                 data.categories.map(category=>{
                 return(
-                  <li key={category.name} onClick={(e)=>this.setCategory(category.name)}>{category.name}</li>
+                  <li className={`${currentCategory()===category.name?'active':''}`} key={category.name} onClick={(e)=>this.setCategory(category.name)}>{category.name}</li>
                 )
               })
                }

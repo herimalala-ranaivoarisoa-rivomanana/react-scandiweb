@@ -6,7 +6,7 @@ import compose from 'lodash.flowright';
 import classes from './productCardElement.module.css';
 import { getCurrentCurrencyQuery} from '../../graphql/reactivities/state';
 import { 
-  getProductQuery,
+  /* getProductQuery, */
   getCurrenciesQuery,
   } from '../../graphql/queries/queries';
 
@@ -15,7 +15,7 @@ class Product extends Component {
   displayProduct(){
   const {product} = this.props;
   const {currentCurrency} = this.props.getCurrentCurrencyQuery
-  console.log(currentCurrency)
+  console.log(product)
   if(product){
     return(
       <div className={classes.ProductCard}>
@@ -75,7 +75,7 @@ class Product extends Component {
 })(Product);  */
 
 export default compose(
-  graphql(getProductQuery,{name:'getProductQuery'},{
+/*   graphql(getProductQuery,{name:'getProductQuery'},{
     options:(props)=>{
       return{
         variables:{
@@ -83,7 +83,7 @@ export default compose(
         }
       }
     }
-  }),
+  }), */
   graphql(getCurrenciesQuery,{name:'getCurrenciesQuery'}),
   graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'}),
 )(Product)
