@@ -5,14 +5,14 @@ import Navigation from './navigation/navigation'
 class Layout extends Component{
   render(){
     return(
-      <body>
+      <React.Fragment>
         <Header>
           <Navigation/>
         </Header>
         <main>
           {this.props.children}
         </main>
-      </body>
+      </React.Fragment>
     )
   }
 }

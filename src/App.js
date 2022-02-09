@@ -1,13 +1,15 @@
 import React, {Component} from 'react'
 import {BrowserRouter, Routes, Route} from  'react-router-dom'
-import ProductPage from './pages/productLandingPage'
+import ProductsPage from './pages/productLandingPage'
+import ProductDetails from './pages/productDetailsPage'
 class App extends Component {
   render(){
     return(
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<ProductPage/>} />
-          <Route path='/products' element={<ProductPage/>} />
+          <Route path='/' element={<ProductsPage/>} />
+          <Route path='/products' element={<ProductsPage/>} />
+          <Route path='/product' element={<ProductDetails/>} />
         </Routes>
       </BrowserRouter>
 

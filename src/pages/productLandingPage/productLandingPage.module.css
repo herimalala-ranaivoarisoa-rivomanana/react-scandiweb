@@ -85,11 +85,12 @@ text-align: center;
   width:354px;
   height:330px;
   margin-bottom:24px;
-  background-color:#C4C4C4;
 }
 
 .ProductCardImage img{
   width:100%;
+  opacity:80%;
+  background-color:#C4C4C4;
 }
 
 .ProductCardContent{

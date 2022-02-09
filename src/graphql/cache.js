@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client';
-import { currentCurrency,currentCategory } from './reactivities/state';
+import { currentCurrency,currentCategory,currentProduct,currentProductDetailsImage,overlay,cartItems } from './reactivities/state';
 
 // Here ,let's define our type and field poliies for our reactive variable.
 
@@ -17,6 +17,27 @@ export default new InMemoryCache({
             return currentCurrency();
           }
         },
+        currentProduct: {
+          read() {
+            return currentProduct();
+          }
+        },
+        currentProductDetailsImage: {
+          read() {
+            return currentProductDetailsImage();
+          }
+        },
+        overlay: {
+          read() {
+            return overlay();
+          }
+        },
+        cartItems: {
+          read() {
+            return cartItems();
+          }
+        },
+        
       }
     }
   }

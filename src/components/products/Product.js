@@ -15,7 +15,6 @@ class Product extends Component {
   displayProduct(){
   const {product} = this.props;
   const {currentCurrency} = this.props.getCurrentCurrencyQuery
-  console.log(product)
   if(product){
     return(
       <div className={classes.ProductCard}>
