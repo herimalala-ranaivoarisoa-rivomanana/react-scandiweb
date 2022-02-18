@@ -12,7 +12,7 @@ class Currency extends Component{
       return(
        data.currencies.map(currency=>{
          return(
-           <option key={currency.label} value={currency.label} >{currency.symbol}</option>
+           <option style={{"width":"39px","marginRight":"10px"}} key={currency.label} value={currency.label} >{currency.symbol}</option>
          )
        })
       )
@@ -33,7 +33,7 @@ class Currency extends Component{
   render(){
     const {currentCurrency} = this.props.getCurrentCurrencyQuery
     return(
-      <select style={{"border":"none"}}  onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
+      <select style={{"border":"none","width":"39px","height":"80"}}  onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
       <option value={currentCurrency.label}>{currentCurrency.symbol}</option>
         {this.displayCurrencies()}
       </select>

@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 import { graphql} from '@apollo/client/react/hoc';
 import compose from 'lodash.flowright';
 
-import { getCurrentCurrencyQuery,getCartItemsQuery,getOverlayQuery,getFavouritesQuery,cartItems,overlay,favourites} from '../../graphql/reactivities/state';
+import { getCurrentCurrencyQuery,getCartItemsQuery,getOverlayQuery,getFavouritesQuery,cartItems,overlay,favourites,articleCount} from '../../graphql/reactivities/state';
 import { getCurrenciesQuery} from '../../graphql/queries/queries';
 
 import '../../index.css'
@@ -72,6 +72,8 @@ class Product extends Component {
   removeFromCart(product){
     this.removeFromFavorite(product)
     const cartItemsTemp = cartItems().filter(cart=>cart.product.id!==product.id)
+    articleCount(articleCount()-1)
+          localStorage.setItem('articleCount', JSON.stringify(articleCount()));
     cartItems(cartItemsTemp)
     localStorage.setItem('cartItems', JSON.stringify(cartItems()));
    }

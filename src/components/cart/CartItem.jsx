@@ -120,6 +120,7 @@ class CartItem extends Component{
                          <StyledCartItemDetailsContentAttributeValueList>
                            
                           {attribute.items.map((item)=>{
+                            if(item.id!=="Yes"&& item.id!=="No")
                             return(
                               <StyledCartItemDetailsContentAttributeValue onClick={(e)=>this.setAttributes(e,attribute.name,item.id,item.value)} 
                                 style={{display:"flex",width:"63px",height:"45px",border:" 1px solid #A6A6A6",
@@ -128,6 +129,22 @@ class CartItem extends Component{
                                 key={item.id}>
                                 <StyledCartItemDetailsContentAttributeValueItem>{item.value}</StyledCartItemDetailsContentAttributeValueItem>
                               </StyledCartItemDetailsContentAttributeValue>
+                            )
+                            else return(
+                              <StyledCartItemDetailsContentAttributeValue 
+                               /*  style={{display:"flex",width:"63px",height:"45px",border:" 1px solid #A6A6A6",
+                                color:this.state.attributes[attribute.name] && this.state.attributes[attribute.name]["id"]===item.id?"var(--c-white)":"#1D1F22",
+                                backgroundColor:this.state.attributes[attribute.name] && this.state.attributes[attribute.name]["id"]===item.id?"#1D1F22":"var(--c-white)"}}  */
+                                key={item.id}>
+                              {/*   <StyledCartItemDetailsContentAttributeValueItem>{item.value}</StyledCartItemDetailsContentAttributeValueItem> */}
+                               {item.id=="Yes" && 
+                               
+                               <input onChange={(e)=>this.setAttributes(e,attribute.name,e.target.checked?"Yes":"No",e.target.checked?"Yes":"No")}  type="checkbox" name="attribute.name" value="" checked={this.state.attributes[attribute.name] && this.state.attributes[attribute.name]["id"]===item.id?true:false}/>
+                               
+                               }
+
+                              </StyledCartItemDetailsContentAttributeValue>
+
                             )
                           })}
                           </StyledCartItemDetailsContentAttributeValueList>
