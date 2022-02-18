@@ -2,7 +2,7 @@ import React,{Component} from 'react'
 import { graphql } from '@apollo/client/react/hoc';
 import compose from 'lodash.flowright';
 
-import { getCurrentCurrencyQuery,currentCurrency } from '../../graphql/reactivities/state';
+import { getCurrentCurrencyQuery,currentCurrency,cartItems,amount } from '../../graphql/reactivities/state';
 import {getCurrenciesQuery} from '../../graphql/queries/queries';
 
 class Currency extends Component{
@@ -22,19 +22,21 @@ class Currency extends Component{
     const {currencies} = this.props.getCurrenciesQuery
     var currency = currencies.find(item=>item.label===obj.label)
     currentCurrency(currency)
-    console.log(currency)
     localStorage.setItem('currentCurrency', JSON.stringify(currency))
+    amount(0)
+    cartItems().map(item=>
+      amount(amount()+item.qty*item.product.prices.find((price)=>price.currency.label===currentCurrency().label).amount)
+     )
+    localStorage.setItem('amount', JSON.stringify(amount()));
   }
 
   render(){
-    const {symbol} = currentCurrency()
+    const {currentCurrency} = this.props.getCurrentCurrencyQuery
     return(
-      <div className="actions">
-        <select className="currency" onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
-        <option value="" selected disabled hidden>{symbol}</option>
-          {this.displayCurrencies()}
-        </select>
-      </div>
+      <select style={{"border":"none"}}  onChange={(e)=>this.setCurrentCurrency({label:e.target.value})}> 
+      <option value={currentCurrency.label}>{currentCurrency.symbol}</option>
+        {this.displayCurrencies()}
+      </select>
     )
   }
 }

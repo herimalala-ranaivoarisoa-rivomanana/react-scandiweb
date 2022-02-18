@@ -8,9 +8,22 @@ export const currentProduct = makeVar(JSON.parse(localStorage.getItem('currentPr
 
 export const currentProductDetailsImage = makeVar();
 
-export const cartItems = makeVar(JSON.parse(localStorage.getItem('cartItems'))||[{}]);
+export const cartItems = makeVar(JSON.parse(localStorage.getItem('cartItems'))||[]);
 
 export const overlay = makeVar(JSON.parse(localStorage.getItem('overlay'))||false);
+
+export const favourites = makeVar(JSON.parse(localStorage.getItem('favourites'))||[]);
+
+export const amount = makeVar(JSON.parse(localStorage.getItem('amount'))||0);
+
+export const articleCount = makeVar(JSON.parse(localStorage.getItem('articleCount'))||0);
+
+
+export const getFavouritesQuery = gql`
+  query getFavourites{
+    favourites @client
+  }
+`
 
 export const getCartItemsQuery = gql`
   query getCartItems{
@@ -43,3 +56,17 @@ export const getCurrentProductDetailsImageQuery = gql`
   query getCurrentProductDetailsImage{
     currentProductDetailsImage @client
   }`
+
+
+export const getAmountQuery = gql`
+query getAmount{
+  amount @client
+}`
+
+
+export const getArticlaCountQuery = gql`
+query getArticleCount{
+  articleCount @client
+}`
+
+

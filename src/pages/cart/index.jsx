@@ -3,19 +3,18 @@ import React, { Component } from 'react'
 import { graphql} from '@apollo/client/react/hoc';
 import compose from 'lodash.flowright';
 
-import {getCurrentCurrencyQuery,getCurrentCategoryQuery} from '../../graphql/reactivities/state'
+import {getCurrentCurrencyQuery,getCurrentCategoryQuery, overlay} from '../../graphql/reactivities/state'
 import { getCategoriesQuery,getCurrenciesQuery,} from '../../graphql/queries/queries';
 
 import Layout from '../../components/layout/Layout'
-import Category from '../../components/categories/Category';
+import Cart from '../../components/cart'
 
-class Cart extends Component{
+
+class CartPage extends Component{
   render(){
-    const {currentCategory} = this.props.getCurrentCategoryQuery
-    const {currentCurrency} = this.props.getCurrentCurrencyQuery
     return(
     <Layout>
-      CART PAGE
+      <Cart overlay={overlay()}/>
     </Layout>
     )
   }
@@ -26,4 +25,4 @@ export default compose(
   graphql(getCategoriesQuery,{name:'getCategoriesQuery'}),
   graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'}),
   graphql(getCurrentCategoryQuery,{name:'getCurrentCategoryQuery'}),
-)(Cart)
+)(CartPage)

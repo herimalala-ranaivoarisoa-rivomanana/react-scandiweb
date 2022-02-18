@@ -1,25 +1,110 @@
 import React,{Component} from 'react';
+import {Link} from 'react-router-dom'
+import styled from "styled-components";
+
+import { graphql} from '@apollo/client/react/hoc';
+import compose from 'lodash.flowright';
 
 import Currency from '../../currencies/Currency'
 import NavCategories from '../../categories/NavCategories';
 
+import {getCurrentCurrencyQuery,getCurrentCategoryQuery,getCartItemsQuery,getOverlayQuery,getArticlaCountQuery, cartItems,overlay} from '../../../graphql/reactivities/state'
+
 class Navigation extends Component{
+  constructor(props){
+    super(props);
+    this.viewBag = this.viewBag.bind(this);
+  }
+
+  viewBag(){
+    overlay(false)
+    localStorage.setItem('overlay', JSON.stringify(overlay()));
+   }
+
   render(){
+    const {articleCount}= this.props.getArticlaCountQuery
     return(
-      <nav>
-      <NavCategories/>
-      <div className="logo">
-        <img   src="/assets/icons/logo.svg" alt="Basket icon"/>
-      </div>
-      <div className="actionsContainer">
-      <Currency/>
-         <div className="cart-cta">
-           <img   src="/assets/icons/basketempty.svg" alt="Basket icon"/>
-         </div>
-      </div>
-    </nav>
+      <StyledNav>
+        <StyledNavCategories>
+          <NavCategories/>
+        </StyledNavCategories>
+        <StyledNavLogo>
+          <StyledNavLogoImage src="/assets/icons/logo.svg" alt="Basket icon"/>
+        </StyledNavLogo>
+        <StyledNavAction>
+          <Currency/>
+          <StyledNavActionCta>
+            <Link to="/cart"><img onClick={this.viewBag} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
+            <StyledNavCounter number={articleCount}>{articleCount}</StyledNavCounter>
+          </StyledNavActionCta>
+        </StyledNavAction>
+      </StyledNav>
     )
   }
 }
 
-export default Navigation
+export default compose(
+  graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'}),
+  graphql(getCurrentCategoryQuery,{name:'getCurrentCategoryQuery'}),
+  graphql(getCartItemsQuery,{name:'getCartItemsQuery'}),
+  graphql(getOverlayQuery,{name:'getOverlayQuery'}),
+  graphql(getArticlaCountQuery,{name:'getArticlaCountQuery'}),
+)(Navigation)
+
+const StyledNav = styled.nav`
+width:1440px;
+height:80px;
+display:flex;
+flex-direction: row;
+margin-bottom:0px;
+background-color:#FFFFFF;
+`
+
+const StyledNavCategories = styled.div`
+width: 699.5px;
+height:80px;
+padding-left:101px
+`
+const StyledNavLogo = styled.div`
+margin:0;
+height:80px;
+`
+const StyledNavLogoImage = styled.img`
+margin:0;
+margin-top:30.72px;
+`
+
+const StyledNavAction = styled.div`
+width:97px;
+height:80px;
+padding-right:101px;
+margin-left:602.5px;
+display: flex;
+flex-direction: row;
+justify-content: flex-end;
+align-items: center;
+`
+
+const StyledNavActionCta = styled.div`
+margin:0;
+margin-left: 22px;
+width:20px;
+height:20px;
+align-items: center;
+& img{
+  width:20px;
+  heigth:20px;
+}
+`
+
+const StyledNavCounter = styled.div`
+color:var(--c-white);
+background-color:black;
+text-align:center;
+border-radius:50%;
+margin-top:-36px;
+margin-left:10px;
+width:20px;
+height:20px;
+visibility:${props=>props.number>0?"visible":"hidden"}
+`
