@@ -27,7 +27,7 @@ export const getFavouritesQuery = gql`
 
 export const getCartItemsQuery = gql`
   query getCartItems{
-    CartItems @client
+    cartItems @client
   }
 `
 
@@ -64,7 +64,7 @@ query getAmount{
 }`
 
 
-export const getArticlaCountQuery = gql`
+export const getArticleCountQuery = gql`
 query getArticleCount{
   articleCount @client
 }`

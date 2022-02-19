@@ -106,7 +106,7 @@ const StyledCategory = styled.div`
 `
 
 const StyledCategoryName = styled.div`
-padding-left:101px;
+padding-left:106px;
 font-size: 42px;
 font-weight: 400;
 line-height: 67px;

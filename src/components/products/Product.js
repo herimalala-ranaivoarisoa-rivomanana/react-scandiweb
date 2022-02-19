@@ -71,9 +71,9 @@ class Product extends Component {
 
   removeFromCart(product){
     this.removeFromFavorite(product)
+    articleCount(articleCount()-cartItems().find(cart=>cart.product.id===product.id).qty)
+    localStorage.setItem('articleCount', JSON.stringify(articleCount()));
     const cartItemsTemp = cartItems().filter(cart=>cart.product.id!==product.id)
-    articleCount(articleCount()-1)
-          localStorage.setItem('articleCount', JSON.stringify(articleCount()));
     cartItems(cartItemsTemp)
     localStorage.setItem('cartItems', JSON.stringify(cartItems()));
    }

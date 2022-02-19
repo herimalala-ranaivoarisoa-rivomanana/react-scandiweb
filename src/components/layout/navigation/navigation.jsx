@@ -8,7 +8,7 @@ import compose from 'lodash.flowright';
 import Currency from '../../currencies/Currency'
 import NavCategories from '../../categories/NavCategories';
 
-import {getCurrentCurrencyQuery,getCurrentCategoryQuery,getCartItemsQuery,getOverlayQuery,getArticlaCountQuery, cartItems,overlay} from '../../../graphql/reactivities/state'
+import {getCurrentCurrencyQuery,getCurrentCategoryQuery,getCartItemsQuery,getOverlayQuery,getArticleCountQuery, cartItems,overlay} from '../../../graphql/reactivities/state'
 
 class Navigation extends Component{
   constructor(props){
@@ -34,7 +34,7 @@ class Navigation extends Component{
         <StyledNavAction>
           <Currency/>
           <StyledNavActionCta>
-            <Link to="/cart"><img onClick={this.viewBag} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
+            <Link to="/cart"><img width="20px" height="20px" onClick={this.viewBag} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
             <StyledNavCounter number={articleCount}>{articleCount}</StyledNavCounter>
           </StyledNavActionCta>
         </StyledNavAction>
@@ -48,7 +48,7 @@ export default compose(
   graphql(getCurrentCategoryQuery,{name:'getCurrentCategoryQuery'}),
   graphql(getCartItemsQuery,{name:'getCartItemsQuery'}),
   graphql(getOverlayQuery,{name:'getOverlayQuery'}),
-  graphql(getArticlaCountQuery,{name:'getArticlaCountQuery'}),
+  graphql(getArticleCountQuery,{name:'getArticlaCountQuery'}),
 )(Navigation)
 
 const StyledNav = styled.nav`
@@ -61,24 +61,25 @@ background-color:#FFFFFF;
 `
 
 const StyledNavCategories = styled.div`
-width: 699.5px;
+width:699.5px;
 height:80px;
-padding-left:101px
+padding-left:106px
 `
 const StyledNavLogo = styled.div`
 margin:0;
 height:80px;
 `
 const StyledNavLogoImage = styled.img`
+width:41px;
+height:41px;
 margin:0;
 margin-top:30.72px;
 `
 
 const StyledNavAction = styled.div`
-width:97px;
+width:699.5px;
 height:80px;
-padding-right:101px;
-margin-left:602.5px;
+padding-right:106px;
 display: flex;
 flex-direction: row;
 justify-content: flex-end;

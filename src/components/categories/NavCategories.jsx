@@ -70,4 +70,5 @@ text-align: center;
 list-style: none;
 margin-right:32px;
 color:${props=>props.active?"#5ECE7B":"#1D1F22"};
+border-bottom:${props=>props.active?"1px solid #5ECE7B":""};
 `

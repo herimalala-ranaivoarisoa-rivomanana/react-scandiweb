@@ -95,7 +95,7 @@ font-family: Raleway;
 font-size: 16px;
 font-style: normal;
 font-weight: 700;
-line-height: 26px;
+line-height: 25.6px;
 letter-spacing: 0em;
 text-align: right;
 margin-right:6px;
@@ -107,11 +107,9 @@ font-family: Raleway;
 font-size: 16px;
 font-style: normal;
 font-weight: 500;
-line-height: 26px;
+line-height: 25.6px;
 letter-spacing: 0em;
 text-align: right; 
-/* margin-right:6px;
-padding-left:24px; */
 `
 
 const StyledCartItemsContent = styled.div`
@@ -121,6 +119,8 @@ justify-content:left;
 align-items: center;
 width:${props=>props.overlay?"325px":"1098px"};
 margin:auto;
+margin-left:${props=>props.overlay?"":"101px"};
+margin-right:${props=>props.overlay?"":"101px"};
 `
 
 const StyledCartItem = styled.li`
@@ -172,7 +172,7 @@ font-family: Raleway;
 font-size: 14px;
 font-style: normal;
 font-weight: 600;
-line-height: 17px;
+line-height: 16.8px;
 letter-spacing: 0em;
 color:#1D1F22;
 cursor: pointer;
@@ -186,7 +186,7 @@ font-family: Raleway;
 font-size: 14px;
 font-style: normal;
 font-weight: 600;
-line-height: 17px;
+line-height: 16.8px;
 letter-spacing: 0em;
 background-color:#5ECE7B;
 border:1px solid #5ECE7B;

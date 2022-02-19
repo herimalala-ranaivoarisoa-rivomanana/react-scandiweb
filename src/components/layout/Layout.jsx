@@ -10,7 +10,6 @@ import compose from 'lodash.flowright';
 class Layout extends Component{
  
   render(){
-    console.log(overlay())
     return(
       <React.Fragment>
         <Header>
