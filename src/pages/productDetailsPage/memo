@@ -1,0 +1,5 @@
+this.setState((prevState) => ({
+      ...prevState,
+      attributes: { ...prevState.attributes, [attribute]: { id, value } },
+      attributeNumber:prevState.attributeNumber+1
+    }));
