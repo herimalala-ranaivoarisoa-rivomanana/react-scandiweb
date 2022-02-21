@@ -125,7 +125,7 @@ class CartItem extends Component {
       ]);
       localStorage.setItem("cartItems", JSON.stringify(cartItems()));
       cartItems().map((item) => {
-        amount(
+        return amount(
           amount() -
             item.product.prices.find(
               (price) => price.currency.label === currentCurrency().label
@@ -266,7 +266,7 @@ class CartItem extends Component {
                                   overlay={overlay()}
                                   key={item.id}
                                 >
-                                  {item.id == "Yes" && (
+                                  {item.id === "Yes" && (
                                     <input
                                       onChange={(e) =>
                                         this.setAttributes(
@@ -290,7 +290,7 @@ class CartItem extends Component {
                                     />
                                   )}
 
-                                  {item.id == "Yes" && (
+                                  {item.id === "Yes" && (
                                     <StyledCartAttributeCheckName
                                       overlay={overlay()}
                                     >

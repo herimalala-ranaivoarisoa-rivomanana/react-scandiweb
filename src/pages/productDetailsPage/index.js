@@ -59,9 +59,10 @@ class ProductDetails extends Component {
   addToCart(product, attributes) {
     cartItems([...cartItems(), { product, attributes, qty: 1 }]);
     overlay(false);
-    articleCount(1);
+    articleCount(articleCount()+1);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
+    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
   }
 
   render() {
