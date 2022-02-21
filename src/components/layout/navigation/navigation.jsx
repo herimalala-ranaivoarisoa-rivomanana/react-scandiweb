@@ -34,7 +34,7 @@ class Navigation extends Component{
         <StyledNavAction>
           <Currency/>
           <StyledNavActionCta>
-            <Link to="/cart"><StyledNavActionImage onClick={this.viewCartOverlay} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
+            <Link to="/"><StyledNavActionImage onClick={this.viewCartOverlay} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
             <StyledNavCounter number={articleCount}>{articleCount}</StyledNavCounter>
           </StyledNavActionCta>
         </StyledNavAction>

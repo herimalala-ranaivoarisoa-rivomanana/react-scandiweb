@@ -147,12 +147,13 @@ font-style: normal;
 
 const StyledProductCardName = styled.p`
 font-family: Raleway;
-font-size: 18px;
-font-style: Light;
+font-style: normal;
 font-weight: 300;
+font-size: 18px;
 line-height: 160%;
 letter-spacing: 0px;
 text-align: left;
+color:var(--c-black);
 vertical-align:top;
 `
 const StyledCardPrice = styled.div`
@@ -162,24 +163,24 @@ justify-content:flex.start;
 `
 const StyledCardPriceCurrency = styled.div`
 font-family: Raleway;
-font-style: Medium;
+font-style: normal;
+font-weight: 700;
 font-size: 18px;
-/* line-height: 29px */
 line-height: 160%;
-align:right;
-vertical-align:top;
+letter-spacing: 0em;
+text-align: right;
 margin-right:4px;
 color:#1D1F22;
 `
 
 const StyledCardPriceAmount = styled.div`
 font-family: Raleway;
-font-style: Medium;
+font-style: normal;
+font-weight: 700;
 font-size: 18px;
-/* line-height: 29px */
 line-height: 160%;
-align:right;
-vertical-align:top;
+letter-spacing: 0em;
+text-align: right;
 color:#1D1F22;
 `
 

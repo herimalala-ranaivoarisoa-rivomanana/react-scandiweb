@@ -106,12 +106,15 @@ const StyledCategory = styled.div`
 `
 
 const StyledCategoryName = styled.div`
+font-family: Raleway;
 padding-left:106px;
 font-size: 42px;
 font-weight: 400;
 line-height: 67px;
+line-height: 160%;
 letter-spacing: 0px;
 text-align: left;
+color: #1D1F22;
 width:1440px;
 `
 

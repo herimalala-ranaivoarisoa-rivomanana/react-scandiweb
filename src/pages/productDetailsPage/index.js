@@ -43,7 +43,7 @@ class ProductDetails extends Component{
 
   addToCart(product,attributes){
    cartItems([...cartItems(),{product,attributes,qty:1}])
-   overlay(true)
+   overlay(false)
    localStorage.setItem('cartItems', JSON.stringify(cartItems()));
    localStorage.setItem('overlay', JSON.stringify(overlay()));
   }
