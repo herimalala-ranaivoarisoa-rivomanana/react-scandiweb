@@ -1,12 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 
-class Header extends Component{
-  render(){
-    return(
-      <header>
-        {this.props.children}
-      </header>
-    )
+class Header extends Component {
+  render() {
+    return <header>{this.props.children}</header>;
   }
 }
 
