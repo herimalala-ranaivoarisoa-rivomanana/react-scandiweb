@@ -8,16 +8,16 @@ import compose from 'lodash.flowright';
 import Currency from '../../currencies/Currency'
 import NavCategories from '../../categories/NavCategories';
 
-import {getCurrentCurrencyQuery,getCurrentCategoryQuery,getCartItemsQuery,getOverlayQuery,getArticleCountQuery, cartItems,overlay} from '../../../graphql/reactivities/state'
+import {getCurrentCurrencyQuery,getCurrentCategoryQuery,getCartItemsQuery,getOverlayQuery,getArticleCountQuery,overlay} from '../../../graphql/reactivities/state'
 
 class Navigation extends Component{
   constructor(props){
     super(props);
-    this.viewBag = this.viewBag.bind(this);
+    this.viewBag = this.viewCartOverlay.bind(this);
   }
 
-  viewBag(){
-    overlay(false)
+  viewCartOverlay(){
+    overlay(true)
     localStorage.setItem('overlay', JSON.stringify(overlay()));
    }
 
@@ -34,7 +34,7 @@ class Navigation extends Component{
         <StyledNavAction>
           <Currency/>
           <StyledNavActionCta>
-            <Link to="/cart"><img width="20px" height="20px" onClick={this.viewBag} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
+            <Link to="/cart"><StyledNavActionImage onClick={this.viewCartOverlay} src="/assets/icons/cart/emptyCart.svg" alt="EmptyCart icon"/></Link>
             <StyledNavCounter number={articleCount}>{articleCount}</StyledNavCounter>
           </StyledNavActionCta>
         </StyledNavAction>
@@ -84,6 +84,11 @@ display: flex;
 flex-direction: row;
 justify-content: flex-end;
 align-items: center;
+`
+
+const StyledNavActionImage = styled.img`
+width:20px;
+height:20px;
 `
 
 const StyledNavActionCta = styled.div`
