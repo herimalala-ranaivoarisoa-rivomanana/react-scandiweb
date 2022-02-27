@@ -139,7 +139,6 @@ const StyledProductCardContainer = styled.div`
 const ProductCard = styled.div`
   position: relative;
   padding: 16px;
-  top: 16px;
   margin: auto;
   width: 386px;
   height: 412px;
@@ -150,7 +149,7 @@ const ProductImageContainer = styled.div`
   object-fit: contain;
   width: 354px;
   height: 330px;
-  margin-bottom: 8px;
+  margin-bottom: 24px;
   background-color: ${(props) => (props.overlay ? "" : " #c4c4c4")};
 `;
 
@@ -207,7 +206,7 @@ const CartIcon = styled.div`
 /* display:${(props) => (props.inCart ? "block" : "none")}; */
 position: relative;
 border-radius:50%;
-top: -76px;
+top: -92px;
 left:303px;
 width:52px;
 height:52px;
