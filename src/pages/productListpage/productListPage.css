@@ -1,0 +1,65 @@
+.container{
+  display:grid;
+  grid-template-columns: [col0] 386px [col1] 386px [col2] 386px[col3];
+  grid-template-rows: [row0]444px [row1] 444px [row2];
+  }
+  
+  .item1{
+  grid-column-start: col0;
+  grid-column-end: col1;
+  grid-row-start: row0;
+  grid-row-end: row1;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .item2{
+  grid-column-start: col1;
+  grid-column-end: col2;
+  grid-row-start: row0;
+  grid-row-end: row1;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .item3{
+  grid-column-start: col2;
+  grid-column-end: col3;
+  grid-row-start: row0;
+  grid-row-end: row1;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .item4{
+  grid-column-start: col0;
+  grid-column-end: col1;
+  grid-row-start: row1;
+  grid-row-end: row2;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .item5{
+  grid-column-start: col1;
+  grid-column-end: col2;
+  grid-row-start: row1;
+  grid-row-end: row2;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .item6{
+  grid-column-start: col2;
+  grid-column-end: col3;
+  grid-row-start: row1;
+  grid-row-end: row2;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  }

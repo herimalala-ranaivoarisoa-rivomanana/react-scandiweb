@@ -13,8 +13,7 @@ import {
   getFavouritesQuery,
   cartItems,
   overlay,
-  favourites,
-  articleCount,
+  activateRemoveIcon,
 } from "../../graphql/reactivities/state";
 import { getCurrenciesQuery } from "../../graphql/queries/queries";
 
@@ -27,138 +26,91 @@ class Product extends Component {
       hover: false,
     };
   }
+  removeFromCart(product) {
+    const cartItemsTemp = cartItems().filter(
+      (cart) => cart.product.id !== product.id
+    );
 
+    cartItems([...cartItemsTemp]);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+    activateRemoveIcon(false);
+    localStorage.setItem("cartItems", activateRemoveIcon());
+  }
   displayProduct() {
     const { product } = this.props;
     const { currentCurrency } = this.props.getCurrentCurrencyQuery;
 
     if (product) {
-      const inCart = cartItems().find(
-        (carte) => carte.product.id === product.id
-      );
-      const inFavourite = favourites().find((fav) => fav.id === product.id);
+      const inCart = cartItems().find((cart) => cart.product.id === product.id);
       return (
-        <StyledProductCardContainer
-          onMouseOver={() => this.setState({ hover: true })}
-          onMouseLeave={() => this.setState({ hover: false })}
+        <Link
+          style={{ texDecoration: "none", cursor: "default" }}
+          to={`${
+            product.inStock ? (activateRemoveIcon() ? "" : "../product") : "/"
+          }`}
         >
-          <StyledProductCard overlay={overlay()}>
-            <StyledProductCardImageContainer>
-              <StyledProductCardImage src={product.gallery[0]} alt='Product' />
-            </StyledProductCardImageContainer>
-            <StyledProductCardDetails>
-              <StyledProductCardName>{product.name}</StyledProductCardName>
-              <StyledCardPrice>
-                <StyledCardPriceCurrency>
-                  {this.props.selectedCurrency.symbol}
-                </StyledCardPriceCurrency>
-                <StyledCardPriceAmount>
-                  {
-                    product.prices.find(
-                      (price) => price.currency.label === currentCurrency.label
-                    ).amount
-                  }
-                </StyledCardPriceAmount>
-              </StyledCardPrice>
-            </StyledProductCardDetails>
-          </StyledProductCard>
-          <Link
-            style={{ texDecoration: "none", cursor: "default" }}
-            to={`${product.inStock & !inCart ? "../product" : "/"}`}
+          <StyledProductCardContainer
+            onMouseOver={() => this.setState({ hover: true })}
+            onMouseLeave={() => this.setState({ hover: false })}
+            overlay={overlay()}
           >
-            <StyledCartIcon
+            <ProductCard overlay={overlay()}>
+              <ProductImageContainer>
+                <ProductImage src={product.gallery[0]} alt='Product' />
+              </ProductImageContainer>
+              <ProductDetails>
+                <ProductName inStock={product.inStock}>
+                  {product.name}
+                </ProductName>
+                <Price>
+                  <PriceCurrency inStock={product.inStock}>
+                    {this.props.selectedCurrency.symbol}
+                  </PriceCurrency>
+                  <PriceAmount inStock={product.inStock}>
+                    {
+                      product.prices.find(
+                        (price) =>
+                          price.currency.label === currentCurrency.label
+                      ).amount
+                    }
+                  </PriceAmount>
+                </Price>
+              </ProductDetails>
+            </ProductCard>
+            <CartIcon
               inCart={inCart}
               inStock={product.inStock}
               hover={this.state.hover}
-              onClick={(e) => {
-                if (inCart) this.removeFromCart(product);
-              }}
+              onMouseOver={() => (inCart ? activateRemoveIcon(true) : null)}
+              onMouseLeave={() => (inCart ? activateRemoveIcon(false) : null)}
+              onClick={() => this.removeFromCart(product)}
             >
-              <StyledCartIconImage
+              <AddToCartIconImage
+                onMouseOver={() => (this.hover = true)}
+                onMouseLeave={() => (this.hover = false)}
+                hover
                 src={`${
-                  product.inStock
-                    ? !inCart
-                      ? this.state.hover
-                        ? "/assets/icons/cart/add-to-cart.svg"
-                        : ""
-                      : this.state.hover
-                      ? "/assets/icons/cart/remove-from-cart.svg"
-                      : "/assets/icons/cart/inCart.svg"
-                    : ""
+                  inCart
+                    ? activateRemoveIcon()
+                      ? "assets/icons/cart/basket-.svg"
+                      : "assets/icons/cart/emptycart1.svg"
+                    : "assets/icons/cart/emptycart1.svg"
                 }`}
                 alt=''
               />
-            </StyledCartIcon>
-          </Link>
-          <StyledCardBadge inStock={product.inStock} inCart={inCart}>
-            <StyledCardBadgeIcon
-              src='/assets/icons/tick-green.svg'
-              alt='Basket icon'
-            />
-            <StyledCardBadgeBrand>{product.brand}</StyledCardBadgeBrand>
-          </StyledCardBadge>
-          <StyledFavourite
-            inCart={inCart}
-            onClick={(e) => {
-              !inFavourite
-                ? this.addToFavourite(product)
-                : this.removeFromFavorite(product);
-            }}
-          >
-            <StyledFavouriteIcon
-              src={`${
-                inCart
-                  ? !inFavourite
-                    ? this.state.hover
-                      ? "/assets/icons/wishlist/add-to-wishlist.svg"
-                      : ""
-                    : this.state.hover
-                    ? "/assets/icons/wishlist/remove-from-wishlist.svg"
-                    : "/assets/icons/wishlist/in-wishlist.svg"
-                  : ""
-              }`}
-              inCart={inCart}
-              inFavourite={inFavourite}
-              hover={this.state.hover}
-            />
-          </StyledFavourite>
-          <StyledCardLeaveWhiteBrooch inStock={product.inStock}>
-            <StyledCardOutOfStock inStock={product.inStock}>
-              <StyledCardOutOfStockText inStock={product.inStock}>
-                OUT OF STOCK
-              </StyledCardOutOfStockText>
-            </StyledCardOutOfStock>
-          </StyledCardLeaveWhiteBrooch>
-        </StyledProductCardContainer>
+            </CartIcon>
+
+            <LeaveWhiteBrooch inStock={product.inStock} overlay={overlay()}>
+              <OutOfStock inStock={product.inStock}>
+                <OutOfStockText inStock={product.inStock}>
+                  OUT OF STOCK
+                </OutOfStockText>
+              </OutOfStock>
+            </LeaveWhiteBrooch>
+          </StyledProductCardContainer>
+        </Link>
       );
     }
-  }
-
-  removeFromCart(product) {
-    this.removeFromFavorite(product);
-    articleCount(
-      articleCount() -
-        cartItems().find((cart) => cart.product.id === product.id).qty
-    );
-    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-    const cartItemsTemp = cartItems().filter(
-      (cart) => cart.product.id !== product.id
-    );
-    cartItems(cartItemsTemp);
-    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-  }
-
-  addToFavourite(product) {
-    favourites([...favourites(), product]);
-    localStorage.setItem("favourites", JSON.stringify(favourites()));
-  }
-
-  removeFromFavorite(product) {
-    const favouritesTemp = favourites().filter(
-      (favourite) => favourite.id !== product.id
-    );
-    favourites(favouritesTemp);
-    localStorage.setItem("favourites", JSON.stringify(favourites()));
   }
 
   render() {
@@ -177,81 +129,81 @@ export default compose(
 const StyledProductCardContainer = styled.div`
   width: 386px;
   height: 444px;
+  cursor: pointer;
+  background-color: ${(props) => (!props.overlay ? "var(--c-white)" : "")};
   &:hover {
     filter: drop-shadow(0px 4px 35px rgba(168, 172, 176, 0.19));
   }
 `;
 
-const StyledProductCard = styled.div`
+const ProductCard = styled.div`
   position: relative;
   padding: 16px;
   top: 16px;
   margin: auto;
   width: 386px;
   height: 412px;
-  background-color: ${(props) =>
-    props.overlay ? "rgba(57, 55, 72,0)" : "#FFFFFF"};
+  background-color: ${(props) => (props.overlay ? "" : "#FFFFFF")};
 `;
-const StyledProductCardImageContainer = styled.div`
+const ProductImageContainer = styled.div`
   overflow: hidden;
   object-fit: contain;
   width: 354px;
   height: 330px;
   margin-bottom: 8px;
-  background-color: #c4c4c4;
+  background-color: ${(props) => (props.overlay ? "" : " #c4c4c4")};
 `;
 
-const StyledProductCardImage = styled.img`
-  opacity: 95%;
+const ProductImage = styled.img`
   width: 354px;
   height: 330px;
 `;
-const StyledProductCardDetails = styled.div`
+const ProductDetails = styled.div`
   color: #8d8f9a;
   font-family: Raleway;
   font-style: normal;
 `;
 
-const StyledProductCardName = styled.p`
-  font-family: Raleway;
-  font-style: normal;
+const ProductName = styled.p`
+  font-family: Raleway-light;
   font-weight: 300;
   font-size: 18px;
+  line-height: 28.8px;
   line-height: 160%;
   letter-spacing: 0px;
   text-align: left;
-  color: var(--c-black);
+  color: ${(props) => (props.inStock ? "#1D1F22" : "#8D8F9A")};
   vertical-align: top;
 `;
-const StyledCardPrice = styled.div`
+const Price = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex.start;
 `;
-const StyledCardPriceCurrency = styled.div`
-  font-family: Raleway;
-  font-style: normal;
-  font-weight: 700;
+const PriceCurrency = styled.div`
+  font-family: Raleway-medium;
+  font-weight: 500;
   font-size: 18px;
+  line-height: 29px;
   line-height: 160%;
   letter-spacing: 0em;
   text-align: right;
   margin-right: 4px;
-  color: #1d1f22;
+  color: ${(props) => (props.inStock ? "#1D1F22" : "#8D8F9A")};
 `;
 
-const StyledCardPriceAmount = styled.div`
-  font-family: Raleway;
-  font-style: normal;
-  font-weight: 700;
+const PriceAmount = styled.div`
+  font-family: Raleway-medium;
+  font-weight: 500;
   font-size: 18px;
+  line-height: 29px;
   line-height: 160%;
   letter-spacing: 0em;
   text-align: right;
-  color: #1d1f22;
+  color: ${(props) => (props.inStock ? "#1D1F22" : "#8D8F9A")};
 `;
 
-const StyledCartIcon = styled.div`
+const CartIcon = styled.div`
 /* display:${(props) => (props.inCart ? "block" : "none")}; */
 position: relative;
 border-radius:50%;
@@ -259,17 +211,9 @@ top: -76px;
 left:303px;
 width:52px;
 height:52px;
-z-index:11;
-background-color:${(props) =>
-  props.inStock
-    ? !props.inCart
-      ? props.hover
-        ? "#5ECE7B"
-        : "none"
-      : props.hover
-      ? "red"
-      : "#5ECE7B"
-    : "none"};
+z-index:200;
+background-color:#5ECE7B;/* ${(props) =>
+  props.inCart ? (props.hover ? "#ff7800 " : "#5ECE7B") : "#5ECE7B"}; */
 visibility:${(props) =>
   props.inStock
     ? !props.inCart
@@ -282,10 +226,13 @@ visibility:${(props) =>
     : "hidden"};
 filter:	drop-shadow(0px	4px	11px rgba(29, 31, 34, 0.1));
 cursor:pointer; 
+&:hover{
+  background-color:${(props) => (props.inCart ? "#ff7800 " : "#5ECE7B")};
+  }
 }
 `;
 
-const StyledCartIconImage = styled.img`
+const AddToCartIconImage = styled.img`
   width: 24px;
   height: 21px;
   margin-left: 14px;
@@ -294,95 +241,32 @@ const StyledCartIconImage = styled.img`
   margin-bottom: 15.5px;
 `;
 
-const StyledCardBadge = styled.div`
-  position: relative;
-  top: -424px;
-  left: 16px;
-  /* width:61px; */
-  width: 122px;
-  height: 35px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  color: var(--c-primary);
-`;
-
-const StyledCardBadgeIcon = styled.img`
-  overflow: hidden;
-  width: 12px;
-  height: 12px;
-  margin-right: 5px;
-`;
-const StyledCardBadgeBrand = styled.p`
-  font-family: Raleway;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 19.2px;
-  letter-spacing: 0px;
-  text-align: center;
-`;
-const StyledFavourite = styled.div`
-  visibility: ${(props) => (props.inCart ? "visible" : "hidden")};
-  position: relative;
-  top: -452px;
-  left: 318px;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-`;
-const StyledFavouriteIcon = styled.img`
-  display: ${(props) => (props.inCart && !props.favourite ? "block" : "none")};
-  width: 20px;
-  height: 17px;
-  visibility: ${(props) => (props.inFavourite ? "visible" : "hidden")}; /* 
-background-color:${(props) =>
-    props.inStock
-      ? !props.inCart
-        ? props.hover
-          ? "#5ECE7B"
-          : "none"
-        : props.hover
-        ? "red"
-        : "#5ECE7B"
-      : "none"}; */
-  visibility: ${(props) =>
-    props.inCart
-      ? !props.inFavourite
-        ? props.hover
-          ? "visible"
-          : "hidden"
-        : props.hover
-        ? "visible"
-        : "visible"
-      : "hidden"};
-`;
-
-const StyledCardLeaveWhiteBrooch = styled.div`
+const LeaveWhiteBrooch = styled.div`
   position: relative;
   display: ${(props) => (props.inStock ? "none" : "flex")};
   justify-content: center;
   align-items: center;
-  top: -491.5px;
+  top: -436px;
   left: 15px;
   width: 356px;
   height: 338px;
-  background-color: var(--c-white);
+  background-color: ${(props) => (props.overlay ? "" : "var(--c-white)")};
   opacity: 50%;
   z-index: 10;
 `;
 
-const StyledCardOutOfStock = styled.div`
-  width: 173px;
+const OutOfStock = styled.div`
+  width: 356px;
   height: 39px;
 `;
-const StyledCardOutOfStockText = styled.p`
+const OutOfStockText = styled.p`
   font-family: Raleway;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
-  line-height: 38px;
+  line-height: 38.4px;
+  line-height: 160%;
   letter-spacing: 0px;
-  text-align: left;
+  text-align: center;
+  color: #8d8f9a;
 `;

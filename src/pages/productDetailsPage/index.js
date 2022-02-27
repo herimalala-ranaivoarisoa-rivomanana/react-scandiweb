@@ -12,12 +12,13 @@ import {
   getCurrentProductQuery,
   getCurrentProductDetailsImageQuery,
   getOverlayQuery,
-  currentCurrency,
   currentProduct,
+  getCurrentAttributesQuery,
   currentProductDetailsImage,
   overlay,
   cartItems,
   articleCount,
+  currentAttributes,
 } from "../../graphql/reactivities/state";
 import {
   getCategoriesQuery,
@@ -29,11 +30,9 @@ import Layout from "../../components/layout/Layout";
 class ProductDetails extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      cartItems: cartItems(),
-      attributes: cartItems.attributes ? cartItems.attributes : {},
-      inCart: cartItems.inCart ? cartItems.inCart : false,
-    };
+    this.state = {};
+    this.removeFromCart = this.removeFromCart.bind(this);
+    this.checkAttributes();
   }
   changeImage(im) {
     currentProductDetailsImage(im);
@@ -50,103 +49,179 @@ class ProductDetails extends Component {
 
   setAttributes(e, attribute, id, value) {
     e.preventDefault();
-    this.setState((prevState) => ({
-      ...prevState,
-      attributes: { ...prevState.attributes, [attribute]: { id, value } },
-    }));
+    const currentAttributesTemp = currentAttributes().filter(
+      (item) => item.name !== attribute.name
+    );
+    currentAttributes([
+      ...currentAttributesTemp,
+      { name: attribute.name, id, value },
+    ]);
+    localStorage.setItem(
+      "currentAttributes",
+      JSON.stringify(currentAttributes())
+    );
   }
 
   addToCart(product, attributes) {
-    cartItems([...cartItems(), { product, attributes, qty: 1 }]);
-    overlay(false);
-    articleCount(articleCount()+1);
-    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-    localStorage.setItem("overlay", JSON.stringify(overlay()));
+    const cart = cartItems().find(
+      (cart) => cart.product.id === currentProduct().id
+    );
+    if (cart) {
+      const carteItemsTemps = cartItems().filter(
+        (item) => item.product.id !== product.id
+      );
+      cartItems([...carteItemsTemps, { product, attributes, qty: cart.qty }]);
+      overlay(false);
+      currentAttributes([]);
+      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+      localStorage.setItem("overlay", JSON.stringify(overlay()));
+      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    } else {
+      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+      overlay(false);
+      articleCount(articleCount() + 1);
+      currentAttributes([]);
+      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+      localStorage.setItem("overlay", JSON.stringify(overlay()));
+      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    }
+    currentProductDetailsImage("")
+    localStorage.setItem("currentProductDetailsImage", JSON.stringify(currentProductDetailsImage()));
+  }
+
+  checkAttributes() {
+    const cart = cartItems().find(
+      (cart) => cart.product.id === currentProduct().id
+    );
+    if (cart) {
+      currentAttributes([...cart.attributes]);
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    } else {
+      currentAttributes([]);
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    }
+  }
+
+  removeFromCart(product) {
+    articleCount(
+      articleCount() -
+        cartItems().find((cart) => cart.product.id === product.id).qty
+    );
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+    const cartItemsTemp = cartItems().filter(
+      (cart) => cart.product.id !== product.id
+    );
+    cartItems(cartItemsTemp);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
   }
 
   render() {
-    const product = currentProduct();
-    const currency = currentCurrency();
+    const { currentProduct: product } = this.props.getCurrentProductQuery;
+    const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
+    const currentAttributes =
+      this.props.getCurrentAttributesQuery.currentAttributes;
+
+    console.log(product);
+    console.log(currentAttributes);
     return (
       <Layout>
-        <StyledProductDetails>
-          <StyledProductGalleryContainer>
+        <Details>
+          <GalleryContainer>
             {product.gallery.map((im) => {
               return (
-                <StyledProductGallery
+                <Gallery
                   key={im}
                   onClick={(e) => {
                     this.changeImage(im);
                   }}
                 >
-                  <StyledProductGalleryImage
+                  <GalleryImage
                     width='79px'
                     height='80px'
                     srcSet={im}
                     alt='gallery'
                   />
-                </StyledProductGallery>
+                </Gallery>
               );
             })}
-          </StyledProductGalleryContainer>
-          <StyledProductDetailsContainer>
-            <StyledProductDetailsImageContainer>
-              <StyledProductDetailsImage
+          </GalleryContainer>
+          <DetailsContainer>
+            <ImageContainer>
+              <Image
                 width='610px'
                 height='511px'
                 srcSet={currentProductDetailsImage() || product.gallery[0]}
                 alt='gallery'
               />
-            </StyledProductDetailsImageContainer>
-            <StyledProductDetailsContent>
-              <StyledProductName>{product.name}</StyledProductName>
-              <StyledproductDetailsAttributesContainer>
+            </ImageContainer>
+            <Content>
+              <Brand>{product.brand}</Brand>
+              <ProductName>{product.name}</ProductName>
+              <AttributesContainer>
                 {product.attributes.map((attribute) => {
                   return (
-                    <StyledProductDetailsAttributesList key={attribute.id}>
-                      <StyledProductDetailsAttributeName>
+                    <AttributesList key={attribute.id}>
+                      <AttributeName>
                         {attribute.name.toUpperCase()}:
-                      </StyledProductDetailsAttributeName>
-                      <StyledProductDetailsContentAttributeValueContainer>
+                      </AttributeName>
+                      <AttributeValueContainer>
                         {attribute.type === "swatch" ? (
-                          <StyledProductDetailsContentAttributeValueList>
+                          <AttributeValueList>
                             {attribute.items.map((item) => {
                               return (
-                                <StyledProductDetailsContentAttributeValue
+                                <AttributeValue
                                   onClick={(e) =>
                                     this.setAttributes(
                                       e,
-                                      attribute.name,
+                                      attribute,
                                       item.id,
                                       item.value
                                     )
                                   }
                                   key={item.id}
                                   style={{
-                                    width: "63px",
-                                    height:
-                                      this.state.attributes[attribute.name] &&
-                                      this.state.attributes[attribute.name][
-                                        "id"
-                                      ] === item.id
-                                        ? "60px"
-                                        : "45px",
+                                    width: "54px",
+                                    height: "45px",
+                                    border:
+                                      currentAttributes.length > 0 &&
+                                      currentAttributes.find(
+                                        (att) => att.name === attribute.name
+                                      )
+                                        ? currentAttributes.find(
+                                            (att) => att.name === attribute.name
+                                          ).id === item.id
+                                          ? "2px solid #FA9A53"
+                                          : "1px solid #A6A6A6"
+                                        : "1px solid #A6A6A6",
                                     backgroundColor: item.value,
                                   }}
-                                ></StyledProductDetailsContentAttributeValue>
+                                ></AttributeValue>
                               );
                             })}
-                          </StyledProductDetailsContentAttributeValueList>
+                          </AttributeValueList>
                         ) : (
-                          <StyledProductDetailsContentAttributeValueList>
+                          <AttributeValueList>
                             {attribute.items.map((item) => {
                               return (
-                                <StyledProductDetailsContentAttributeValue
+                                <AttributeValue
                                   onClick={(e) =>
                                     this.setAttributes(
                                       e,
-                                      attribute.name,
+                                      attribute,
                                       item.id,
                                       item.value
                                     )
@@ -157,62 +232,100 @@ class ProductDetails extends Component {
                                     height: "45px",
                                     border: " 1px solid #A6A6A6",
                                     color:
-                                      this.state.attributes[attribute.name] &&
-                                      this.state.attributes[attribute.name][
-                                        "id"
-                                      ] === item.id
-                                        ? "var(--c-white)"
-                                        : "#1D1F22",
-                                    backgroundColor:
-                                      this.state.attributes[attribute.name] &&
-                                      this.state.attributes[attribute.name][
-                                        "id"
-                                      ] === item.id
-                                        ? "#1D1F22"
-                                        : "var(--c-white)",
+                                      currentAttributes.length > 0 &&
+                                      currentAttributes.find(
+                                        (att) => att.name === attribute.name
+                                      )
+                                        ? currentAttributes.find(
+                                            (att) => att.name === attribute.name
+                                          ).id === item.id
+                                          ? "var(--c-white)"
+                                          : "#1D1F22"
+                                        : "",
+                                    background:
+                                      currentAttributes.length > 0 &&
+                                      currentAttributes.find(
+                                        (att) => att.name === attribute.name
+                                      )
+                                        ? currentAttributes.find(
+                                            (att) => att.name === attribute.name
+                                          ).id === item.id
+                                          ? "#1D1F22"
+                                          : "var(--c-white)"
+                                        : "",
                                   }}
                                   key={item.id}
                                 >
-                                  <StyleProductDetailsContentAttributeValueItem>
+                                  <AttributeValueItem>
                                     {item.value}
-                                  </StyleProductDetailsContentAttributeValueItem>
-                                </StyledProductDetailsContentAttributeValue>
+                                  </AttributeValueItem>
+                                </AttributeValue>
                               );
                             })}
-                          </StyledProductDetailsContentAttributeValueList>
+                          </AttributeValueList>
                         )}
-                      </StyledProductDetailsContentAttributeValueContainer>
-                    </StyledProductDetailsAttributesList>
+                      </AttributeValueContainer>
+                    </AttributesList>
                   );
                 })}
-              </StyledproductDetailsAttributesContainer>
-              <StyledProductDetailsPrice>
-                <StyleProductDetailsContentPriceTitle>
-                  PRICE
-                </StyleProductDetailsContentPriceTitle>
-                <StyledProductDetailsContentPriceValue>
-                  {currency.symbol}{" "}
+              </AttributesContainer>
+              <Price>
+                <PriceTitle>
+                  PRICE:
+                </PriceTitle>
+                <PriceValue>
+                  {currency.symbol}
                   {
                     product.prices.find(
                       (price) => price.currency.label === currency.label
                     ).amount
                   }
-                </StyledProductDetailsContentPriceValue>
-              </StyledProductDetailsPrice>
-              <Link to='/products'>
+                </PriceValue>
+              </Price>
+              <Link
+                to={`${
+                  product.attributes.length === currentAttributes.length
+                    ? "/products"
+                    : "/product"
+                }`}
+                disabled={true}
+              >
                 <StyledButton
-                  onClick={() => this.addToCart(product, this.state.attributes)}
+                  onClick={() => {
+                    if (
+                      product.attributes.length === currentAttributes.length
+                    ) {
+                      this.addToCart(product, currentAttributes);
+                    }
+                  }}
                 >
-                  ADD TO CART
+                  {cartItems().find(
+                    (cart) => cart.product.id === currentProduct().id
+                  )
+                    ? "SAVE CHANGE"
+                    : "ADD TO CART"}
                 </StyledButton>
               </Link>
-              <StyledProductDetailsDescription
+
+              {cartItems().find(
+                (cart) => cart.product.id === currentProduct().id
+              ) ? (
+                <Link to='/products'>
+                  <StyledButton
+                    onClick={() => this.removeFromCart(product)}
+                    removing='true'
+                  >
+                    REMOVE FROM CART
+                  </StyledButton>
+                </Link>
+              ) : null}
+              <Description
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
-            </StyledProductDetailsContent>
-          </StyledProductDetailsContainer>
-          <StyledProductGalleryContainer></StyledProductGalleryContainer>
-        </StyledProductDetails>
+            </Content>
+          </DetailsContainer>
+          <GalleryContainer></GalleryContainer>
+        </Details>
       </Layout>
     );
   }
@@ -224,42 +337,41 @@ export default compose(
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
   graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
+  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" }),
   graphql(getCurrentProductDetailsImageQuery, {
     name: "getCurrentProductDetailsImageQueryy",
   }),
   graphql(getOverlayQuery, { name: "getCartItemsQuery" })
 )(ProductDetails);
 
-const StyledProductDetails = styled.div`
+const Details = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: flex-start;
   width: 1440px;
-  height: 740px;
+  height: 745px;
+  margin: auto;
+  margin-top: 80px;
 `;
 
-const StyledProductGalleryContainer = styled.ul`
+const GalleryContainer = styled.ul`
   margin: 0;
   width: 79px;
-  height: 560px;
 `;
 
-const StyledProductGallery = styled.li`
+const Gallery = styled.li`
   margin-bottom: 40px;
+  object-fit: contain;
   width: 79px;
   height: 80px;
   cursor: pointer;
   list-style: none;
 `;
 
-const StyledProductGalleryImage = styled.img`
-  overflow: hidden;
-  object-fit: contain;
-  opacity: 80%;
-`;
+const GalleryImage = styled.img``;
 
-const StyledProductDetailsContainer = styled.div`
+const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -268,7 +380,7 @@ const StyledProductDetailsContainer = styled.div`
   width: auto;
 `;
 
-const StyledProductDetailsImageContainer = styled.div`
+const ImageContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -277,13 +389,12 @@ const StyledProductDetailsImageContainer = styled.div`
   width: auto;
 `;
 
-const StyledProductDetailsImage = styled.img`
+const Image = styled.img`
   margin-left: 40px;
-  margin-top: 48.59px;
   margin-right: 100px;
 `;
 
-const StyledProductDetailsContent = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -291,40 +402,57 @@ const StyledProductDetailsContent = styled.div`
   width: 292px;
 `;
 
-const StyledProductName = styled.div`
+const Brand = styled.div`
+  font-family: Raleway-semibold;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 27px;
+  line-height: 77%;
+  letter-spacing: 0em;
+  text-align: left;
+  margin-bottom: 16px;
+`;
+
+const ProductName = styled.div`
+  padding: 0;
+  margin: 0;
+  font-family: Raleway;
   font-size: 30px;
   font-style: normal;
   font-weight: 400;
   line-height: 27px;
+  line-height: 77%;
   letter-spacing: 0em;
   text-align: left;
   margin-bottom: 43px;
 `;
 
-const StyledproductDetailsAttributesContainer = styled.div`
+const AttributesContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const StyledProductDetailsAttributesList = styled.li`
+const AttributesList = styled.li`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   style-list: none;
 `;
 
-const StyledProductDetailsAttributeName = styled.div`
+const AttributeName = styled.div`
+  font-family: Roboto-condensed-bold;
   font-size: 18px;
-  font-style: normal;
   font-weight: 700;
   line-height: 18px;
+  line-height: 85%;
   letter-spacing: 0em;
   text-align: center;
   margin-bottom: 8px;
 `;
 
-const StyledProductDetailsContentAttributeValueContainer = styled.div``;
+const AttributeValueContainer = styled.div``;
 
-const StyledProductDetailsContentAttributeValueList = styled.ul`
+const AttributeValueList = styled.ul`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -332,39 +460,51 @@ const StyledProductDetailsContentAttributeValueList = styled.ul`
   margin-bottom: 40px;
 `;
 
-const StyledProductDetailsContentAttributeValue = styled.li`
+const AttributeValue = styled.li`
   margin-right: 12px;
   cursor: pointer;
   list-style: none;
 `;
 
-const StyleProductDetailsContentAttributeValueItem = styled.div`
+const AttributeValueItem = styled.div`
   padding: 0;
   margin: auto;
+  font-family: Source Sans Pro;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.05em;
+  text-align: center;
 `;
 
-const StyledProductDetailsPrice = styled.div`
+const Price = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const StyleProductDetailsContentPriceTitle = styled.p`
+const PriceTitle = styled.p`
   margin: 0;
+  font-family: Roboto-condensed-bold;
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
   line-height: 18px;
+  line-height: 88%;
   letter-spacing: 0em;
   text-align: left;
   margin-bottom: 10px;
 `;
 
-const StyledProductDetailsContentPriceValue = styled.p`
-  font-family: Raleway;
+const PriceValue = styled.p`
+  width: auto;
+  height: 46px;
+  font-family: Raleway-bold;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
   line-height: 18px;
+  line-height: 64%;
   letter-spacing: 0em;
   text-align: left;
   margin-bottom: 20px;
@@ -372,14 +512,16 @@ const StyledProductDetailsContentPriceValue = styled.p`
 const StyledButton = styled.button`
 width: 292px;
 height:52px;
-font-family: Raleway;
+font-family: Raleway-semibold;
 font-size: 16px;
 font-style: normal;
 font-weight: 600;
-line-height: 19px;
+line-height: 19.2px;
+line-height: 120%px;
 letter-spacing: 0em;
 text-align: center;
-background-color:var(--c-primary);
+background-color:${(props) =>
+  props.removing ? "#ff7800" : "var(--c-primary)"};
 color: var(--c-white);
 border:0;
 margin-bottom:40px;
@@ -388,13 +530,14 @@ cursor:pointer;
 
 `;
 
-const StyledProductDetailsDescription = styled.div`
+const Description = styled.div`
+  font-family: Roboto;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 26px;
+  line-height: 25.59px;
+  line-height: 159.96%;
   letter-spacing: 0em;
   text-align: left;
-  max-height: 350px;
   width: 292px;
 `;

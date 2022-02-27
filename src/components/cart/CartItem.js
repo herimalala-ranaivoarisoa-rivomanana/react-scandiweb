@@ -9,9 +9,9 @@ import {
   getCurrentCategoryQuery,
   currentCurrency,
   getCartItemsQuery,
+  getCurrentAttributesQuery,
   cartItems,
   amount,
-  articleCount,
   overlay,
 } from "../../graphql/reactivities/state";
 import {
@@ -24,35 +24,37 @@ class CartItem extends Component {
     super(props);
     this.state = {
       product: this.props.cart.product,
-      attributes: cartItems().find(
-        (item) => item.product.id === props.cart.product.id
-      ).attributes,
+      attributes: [
+        ...cartItems().find(
+          (item) => item.product.id === this.props.cart.product.id
+        ).attributes,
+      ],
       qty:
         cartItems().find((item) => item.product.id === props.cart.product.id)
           .qty || 1,
       galleryIndex: 0,
     };
-    amount(0);
-    cartItems().map((item) =>
-      amount(
-        amount() +
-          item.qty *
-            item.product.prices.find(
-              (price) => price.currency.label === currentCurrency().label
-            ).amount
-      )
-    );
-    localStorage.setItem("amount", JSON.stringify(amount()));
-    articleCount(0);
-    cartItems().map((item) => articleCount(articleCount() + item.qty));
-    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-    /*  amount(amount()+item.qty*item.product.prices.find((price)=>price.currency.label===currentCurrency().label).amount) */
+    this.checkAttributes();
     this.addQuantity = this.addQuantity.bind(this);
     this.removeQuantity = this.removeQuantity.bind(this);
   }
 
+  checkAttributes() {
+    const cart = cartItems().find(
+      (cart) => cart.product.id === this.props.cart.product.id
+    );
+    if (cart) {
+      this.setState((prev) => ({ ...prev, attributes: [...cart.attributes] }));
+    } else {
+      this.setState((prev) => ({ ...prev, attributes: [] }));
+    }
+  }
+
   setAttributes(e, attribute, id, value) {
     e.preventDefault();
+    const currentAttributesTemp = this.state.attributes.filter(
+      (item) => item.name !== attribute.name
+    );
     const cartItemsTemp = cartItems().filter(
       (cart) => cart.product.id !== this.state.product.id
     );
@@ -60,88 +62,73 @@ class CartItem extends Component {
       ...cartItemsTemp,
       {
         product: this.state.product,
-        attributes: { ...this.state.attributes, [attribute]: { id, value } },
+        attributes: [
+          ...currentAttributesTemp,
+          { name: attribute.name, id, value },
+        ],
         qty: this.state.qty,
       },
     ]);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     this.setState((prevState) => ({
       ...prevState,
-      attributes: { ...prevState.attributes, [attribute]: { id, value } },
+      attributes: [
+        ...currentAttributesTemp,
+        { name: attribute.name, id, value },
+      ],
     }));
   }
 
   addQuantity(e) {
     e.preventDefault();
     amount(0);
-    const cartItemsTemp = cartItems().filter(
+    let cartItemsTemp = cartItems().filter(
       (cart) => cart.product.id !== this.state.product.id
     );
-    cartItems([
-      ...cartItemsTemp,
-      {
-        product: this.state.product,
-        attributes: this.state.attributes,
-        qty: this.state.qty + 1,
-        amount:
-          this.state.qty *
-          this.state.product.prices.find(
-            (price) => price.currency.label === currentCurrency().label
-          ).amount,
-      },
-    ]);
+    const cartIndex= cartItems().indexOf(cartItems().find(cart=> cart.product.id === this.state.product.id));
+    cartItemsTemp.splice(cartIndex,0,{
+      product: this.state.product,
+      attributes: this.state.attributes,
+      qty: this.state.qty + 1,
+    })
+    cartItems(cartItemsTemp)
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-    cartItems().map((item) =>
-      amount(
-        amount() +
-          item.qty *
-            item.product.prices.find(
-              (price) => price.currency.label === currentCurrency().label
-            ).amount
-      )
-    );
-    localStorage.setItem("amount", JSON.stringify(amount()));
-    articleCount(articleCount() + 1);
-    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     this.setState((prevState) => ({
       ...prevState,
       qty: prevState.qty + 1,
     }));
-  }
+  } 
 
   removeQuantity(e) {
     e.preventDefault();
     if (this.state.qty - 1 > 0) {
-      const cartItemsTemp = cartItems().filter(
+      let cartItemsTemp = cartItems().filter(
         (cart) => cart.product.id !== this.state.product.id
       );
-      cartItems([
-        ...cartItemsTemp,
-        {
-          product: this.state.product,
-          attributes: this.state.attributes,
-          qty: this.state.qty - 1 > 0 ? this.state.qty - 1 : 1,
-        },
-      ]);
+      const cartIndex= cartItems().indexOf(cartItems().find(cart=> cart.product.id === this.state.product.id));
+      cartItemsTemp.splice(cartIndex,0,{
+        product: this.state.product,
+        attributes: this.state.attributes,
+        qty: this.state.qty - 1 > 0 ? this.state.qty - 1 : 1,
+      })
+      cartItems(cartItemsTemp)
       localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-      cartItems().map((item) => {
-        return amount(
-          amount() -
-            item.product.prices.find(
-              (price) => price.currency.label === currentCurrency().label
-            ).amount
-        );
-      });
-      localStorage.setItem("amount", JSON.stringify(amount()));
-      articleCount(articleCount() - 1);
-      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
       this.setState((prevState) => ({
         ...prevState,
         qty: prevState.qty - 1 > 0 ? prevState.qty - 1 : 1,
       }));
+    }else if(this.state.qty - 1=== 0){
+      this.setState((prevState) => ({
+        ...prevState,
+        qty:0,
+      }));
+      const cartItemsTemp = cartItems().filter(
+        (cart) => cart.product.id !== this.state.product.id
+      );
+      cartItems([...cartItemsTemp])
+      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     }
   }
-
   galleryIndexUp(e) {
     this.setState((prevState) => ({
       ...prevState,
@@ -163,42 +150,37 @@ class CartItem extends Component {
   render() {
     const product = this.state.product;
     return (
-      <StyledCart overlay={overlay()}>
-        <StyledCartDetails overlay={overlay()}>
-          <StyledCartBrand overlay={overlay()}>{product.brand}</StyledCartBrand>
-          <StyledCartName overlay={overlay()}>{product.name}</StyledCartName>
-          <StyledCartPrice overlay={overlay()}>
-            <StyledCartPriceCurrency>
-              {currentCurrency().symbol}
-            </StyledCartPriceCurrency>
-            <StyledCartPriceAmount>
+      <Cart overlay={overlay()}>
+        <CartDetails overlay={overlay()}>
+          <ProductBrand overlay={overlay()}>{product.brand}</ProductBrand>
+          <ProductName overlay={overlay()}>{product.name}</ProductName>
+          <Price overlay={overlay()}>
+            <PriceCurrency>{currentCurrency().symbol}</PriceCurrency>
+            <PriceAmount>
               {
                 product.prices.find(
                   (price) => price.currency.label === currentCurrency().label
                 ).amount
               }
-            </StyledCartPriceAmount>
-          </StyledCartPrice>
+            </PriceAmount>
+          </Price>
           <section>
-            <StyledCartAttributesContainer overlay={overlay()}>
+            <AttributesContainer overlay={overlay()}>
               {product.attributes.map((attribute) => {
                 return (
-                  <StyledCartAttributes key={attribute.id} overlay={overlay()}>
-                    <StyledCartAttributesContents overlay={overlay()}>
+                  <Attributes key={attribute.id} overlay={overlay()}>
+                    <AttributesContents overlay={overlay()}>
                       {attribute.type === "swatch" ? (
-                        <StyledCartAttributesContentList
-                          overlay={overlay()}
-                          swatch={true}
-                        >
+                        <AttributesList overlay={overlay()} swatch={true}>
                           {attribute.items.map((item) => {
                             return (
-                              <StyledCartAttributeValue
+                              <AttributeValue
                                 swatch={true}
                                 overlay={overlay()}
                                 onClick={(e) =>
                                   this.setAttributes(
                                     e,
-                                    attribute.name,
+                                    attribute,
                                     item.id,
                                     item.value
                                   )
@@ -206,30 +188,33 @@ class CartItem extends Component {
                                 key={item.id}
                                 style={{
                                   border:
-                                    this.state.attributes[attribute.name] &&
-                                    this.state.attributes[attribute.name][
-                                      "id"
-                                    ] === item.id
-                                      ? "2px solid orange"
-                                      : "1px solid #A6A6A6",
+                                    this.state.attributes.length > 0 &&
+                                    this.state.attributes.find(
+                                      (att) => att.name === attribute.name
+                                    )
+                                      ? this.state.attributes.find(
+                                          (att) => att.name === attribute.name
+                                        ).id === item.id
+                                        ? "2px solid #FA9A53"
+                                        : "1px solid #A6A6A6"
+                                      : "",
                                   backgroundColor: item.value,
                                 }}
-                                /* style={{border:this.state.attributes[attribute.name] && this.state.attributes[attribute.name]["id"]===item.id?"4px solid #5ECE7B":"1px solid #A6A6A6",backgroundColor:item.value}} */
-                              ></StyledCartAttributeValue>
+                             ></AttributeValue>
                             );
                           })}
-                        </StyledCartAttributesContentList>
+                        </AttributesList>
                       ) : (
-                        <StyledCartAttributesContentList overlay={overlay()}>
+                        <AttributesList overlay={overlay()}>
                           {attribute.items.map((item) => {
                             if (item.id !== "Yes" && item.id !== "No")
                               return (
-                                <StyledCartAttributeValue
+                                <AttributeValue
                                   overlay={overlay()}
                                   onClick={(e) =>
                                     this.setAttributes(
                                       e,
-                                      attribute.name,
+                                      attribute,
                                       item.id,
                                       item.value
                                     )
@@ -237,32 +222,38 @@ class CartItem extends Component {
                                   style={{
                                     border: " 1px solid #A6A6A6",
                                     color:
-                                      this.state.attributes[attribute.name] &&
-                                      this.state.attributes[attribute.name][
-                                        "id"
-                                      ] === item.id
-                                        ? "var(--c-white)"
+                                      this.state.attributes.length > 0 &&
+                                      this.state.attributes.find(
+                                        (att) => att.name === attribute.name
+                                      )
+                                        ? this.state.attributes.find(
+                                            (att) => att.name === attribute.name
+                                          ).id === item.id
+                                          ? "var(--c-white)"
+                                          : "#1D1F22"
                                         : "#1D1F22",
                                     backgroundColor:
-                                      this.state.attributes[attribute.name] &&
-                                      this.state.attributes[attribute.name][
-                                        "id"
-                                      ] === item.id
-                                        ? "#1D1F22"
-                                        : "var(--c-white)",
+                                      this.state.attributes.length > 0 &&
+                                      this.state.attributes.find(
+                                        (att) => att.name === attribute.name
+                                      )
+                                        ? this.state.attributes.find(
+                                            (att) => att.name === attribute.name
+                                          ).id === item.id
+                                          ? "#1D1F22"
+                                          : "var(--c-white)"
+                                        : "",
                                   }}
                                   key={item.id}
                                 >
-                                  <StyledCartAttributeValueItem
-                                    overlay={overlay()}
-                                  >
+                                  <AttributeValueItem overlay={overlay()}>
                                     {item.value}
-                                  </StyledCartAttributeValueItem>
-                                </StyledCartAttributeValue>
+                                  </AttributeValueItem>
+                                </AttributeValue>
                               );
                             else
                               return (
-                                <StyledCartAttributeCheck
+                                <AttributeCheckbox
                                   overlay={overlay()}
                                   key={item.id}
                                 >
@@ -271,7 +262,7 @@ class CartItem extends Component {
                                       onChange={(e) =>
                                         this.setAttributes(
                                           e,
-                                          attribute.name,
+                                          attribute,
                                           e.target.checked ? "Yes" : "No",
                                           e.target.checked ? "Yes" : "No"
                                         )
@@ -280,81 +271,80 @@ class CartItem extends Component {
                                       name='attribute.name'
                                       value=''
                                       checked={
-                                        this.state.attributes[attribute.name] &&
-                                        this.state.attributes[attribute.name][
-                                          "id"
-                                        ] === item.id
-                                          ? true
+                                        this.state.attributes.length > 0 &&
+                                        this.state.attributes.find(
+                                          (att) => att.name === attribute.name
+                                        )
+                                          ? this.state.attributes.find(
+                                              (att) =>
+                                                att.name === attribute.name
+                                            ).id === item.id
+                                            ? true
+                                            : false
                                           : false
                                       }
                                     />
                                   )}
 
                                   {item.id === "Yes" && (
-                                    <StyledCartAttributeCheckName
-                                      overlay={overlay()}
-                                    >
+                                    <AttributeCheckboxName overlay={overlay()}>
                                       {attribute.name}
-                                    </StyledCartAttributeCheckName>
+                                    </AttributeCheckboxName>
                                   )}
-                                </StyledCartAttributeCheck>
+                                </AttributeCheckbox>
                               );
                           })}
-                        </StyledCartAttributesContentList>
+                        </AttributesList>
                       )}
-                    </StyledCartAttributesContents>
-                  </StyledCartAttributes>
+                    </AttributesContents>
+                  </Attributes>
                 );
               })}
-            </StyledCartAttributesContainer>
+            </AttributesContainer>
           </section>
-        </StyledCartDetails>
-        <StyledCartRight>
-          <StyledCartMiddle overlay={overlay()}>
-            <StyledCartMiddleOperator overlay={overlay()}>
-              <StyledCartButton overlay={overlay()} onClick={this.addQuantity}>
-                +
-              </StyledCartButton>
-            </StyledCartMiddleOperator>
-            <StyledCartMiddleQty overlay={overlay()}>
-              {this.state.qty}
-            </StyledCartMiddleQty>
-            <StyledCartMiddleOperator overlay={overlay()}>
-              <StyledCartButton
-                overlay={overlay()}
-                onClick={this.removeQuantity}
-              >
-                -
-              </StyledCartButton>
-            </StyledCartMiddleOperator>
-          </StyledCartMiddle>
-          <StyledCartImageContainer overlay={overlay()}>
-            <StyledCartImage
+        </CartDetails>
+        <CartRight>
+          <CartMiddle overlay={overlay()}>
+            <CartMiddleOperator overlay={overlay()}>
+              <CartButton overlay={overlay()} onClick={this.addQuantity}>
+                <img width="12px" height="12px" src="assets/icons/plus-line.svg" alt="Plus"/>
+              </CartButton>
+            </CartMiddleOperator>
+            <CartMiddleQty overlay={overlay()}>{this.state.qty}</CartMiddleQty>
+            <CartMiddleOperator overlay={overlay()}>
+              <CartButton overlay={overlay()} onClick={this.removeQuantity} 
+              style={{backgroundColor:this.state.qty===1?"#ff7800":"",border:this.state.qty===1?"#ff7800":""}}>
+              <img width="12px" height="12px" src="assets/icons/minus-line.svg" alt="minus"/>
+              </CartButton>
+            </CartMiddleOperator>
+          </CartMiddle>
+          <ImageContainer overlay={overlay()}>
+            <Image
               width={`${overlay() ? "105px" : "141px"}`}
               height={`${overlay() ? "137px" : "185px"}`}
               overlay={overlay()}
               srcSet={product.gallery[this.state.galleryIndex]}
               alt='gallery'
             />
-            <StyledImageNav overlay={overlay()}>
-              <StyledCartImage
+            <ImageNav overlay={overlay()}>
+              <Image
                 width='8px'
                 height='14px'
                 srcSet='assets/icons/leftArrow.svg'
                 onClick={(e) => this.galleryIndexDown(e)}
                 alt='gallery'
               />
-              <StyledCartImage
+              <Image
                 width='8px'
                 height='14px'
                 srcSet='assets/icons/rightArrow.svg'
                 onClick={(e) => this.galleryIndexUp(e)}
                 alt='gallery'
               />
-            </StyledImageNav>
-          </StyledCartImageContainer>
-        </StyledCartRight>
-      </StyledCart>
+            </ImageNav>
+          </ImageContainer>
+        </CartRight>
+      </Cart>
     );
   }
 }
@@ -364,10 +354,11 @@ export default compose(
   graphql(getCategoriesQuery, { name: "getCategoriesQuery" }),
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
-  graphql(getCartItemsQuery, { name: "getCartItemsQuery" })
+  graphql(getCartItemsQuery, { name: "getCartItemsQuery" }),
+  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" })
 )(CartItem);
 
-const StyledCart = styled.div`
+const Cart = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -381,14 +372,14 @@ const StyledCart = styled.div`
   border-bottom: ${(props) => (props.overlay ? "none" : "2px solid #E5E5E5")};
 `;
 
-const StyledCartDetails = styled.div`
+const CartDetails = styled.div`
   display: flex;
   flex-direction: column;
   width: ${(props) => (props.overlay ? "146.5px" : "900px")};
   justify-content: flex-start;
 `;
 
-const StyledCartBrand = styled.div`
+const ProductBrand = styled.div`
   font-size: ${(props) => (props.overlay ? "16px" : "30px")};
   font-style: normal;
   /* font-weight:${(props) => (props.overlay ? "300" : "600")}; */
@@ -399,7 +390,7 @@ const StyledCartBrand = styled.div`
   margin-bottom: ${(props) => (props.overlay ? "5px" : "16px")};
 `;
 
-const StyledCartName = styled.div`
+const ProductName = styled.div`
   font-size: ${(props) => (props.overlay ? "16px" : "30px")};
   font-style: normal;
   font-weight: ${(props) => (props.overlay ? "300" : "400")};
@@ -409,13 +400,13 @@ const StyledCartName = styled.div`
   margin-bottom: ${(props) => (props.overlay ? "5px" : "16px")};
 `;
 
-const StyledCartPrice = styled.div`
+const Price = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: ${(props) => (props.overlay ? "27px" : "12px")};
 `;
 
-const StyledCartPriceCurrency = styled.div`
+const PriceCurrency = styled.div`
 font-size:${(props) => (props.overlay ? "16px" : "24px")}
 font-style: normal;
 font-weight:${(props) => (props.overlay ? "500" : "700")};
@@ -425,7 +416,7 @@ text-align: right;
 
 `;
 
-const StyledCartPriceAmount = styled.div`
+const PriceAmount = styled.div`
 font-size:${(props) => (props.overlay ? "16px" : "24px")}
 font-style: normal;
 font-weight:${(props) => (props.overlay ? "500" : "700")};
@@ -434,22 +425,22 @@ letter-spacing: 0em;
 text-align: right;
 `;
 
-const StyledCartAttributesContainer = styled.div`
+const AttributesContainer = styled.div`
   ${(props) => (props.overlay ? "146.5px" : "900px")};
   display: flex;
   flex-direction: column;
 `;
 
-const StyledCartAttributes = styled.li`
+const Attributes = styled.li`
   width: ${(props) => (props.overlay ? "146.5px" : "900px")};
   display: flex;
   flex-direction: column;
 `;
 
-const StyledCartAttributesContents = styled.div`
+const AttributesContents = styled.div`
   width: ${(props) => (props.overlay ? "146.5px" : "900px")};
 `;
-const StyledCartAttributesContentList = styled.ul`
+const AttributesList = styled.ul`
   width: ${(props) => (props.overlay ? "146.5px" : "900px")};
   display: flex;
   flex-direction: row;
@@ -458,7 +449,7 @@ const StyledCartAttributesContentList = styled.ul`
   margin-bottom: 12px;
 `;
 
-const StyledCartAttributeValue = styled.li`
+const AttributeValue = styled.li`
   min-width: ${(props) =>
     props.overlay ? (props.swatch ? "12px" : "24px") : "63px"};
   height: ${(props) => (props.overlay ? "24px" : "45px")};
@@ -469,7 +460,7 @@ const StyledCartAttributeValue = styled.li`
   align-items: center;
 `;
 
-const StyledCartAttributeValueItem = styled.div`
+const AttributeValueItem = styled.div`
   font-family: Source Sans Pro;
   font-size: 14px;
   font-style: normal;
@@ -478,7 +469,7 @@ const StyledCartAttributeValueItem = styled.div`
   letter-spacing: 0em;
   margin: auto;
 `;
-const StyledCartAttributeCheck = styled.div`
+const AttributeCheckbox = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -486,7 +477,7 @@ const StyledCartAttributeCheck = styled.div`
     margin-right: 4px;
   }
 `;
-const StyledCartAttributeCheckName = styled.div`
+const AttributeCheckboxName = styled.div`
   font-family: Source Sans Pro;
   font-size: 14px;
   font-style: normal;
@@ -498,7 +489,7 @@ const StyledCartAttributeCheckName = styled.div`
   padding: 0;
 `;
 
-const StyledCartRight = styled.div`
+const CartRight = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -509,7 +500,7 @@ const StyledCartRight = styled.div`
   vertical-align: middle;
 `;
 
-const StyledCartMiddle = styled.div`
+const CartMiddle = styled.div`
   width: ${(props) => (props.overlay ? "24px" : "45px")};
   height: 100%;
   display: flex;
@@ -518,12 +509,12 @@ const StyledCartMiddle = styled.div`
   align-items: center;
 `;
 
-const StyledCartMiddleQty = styled.div`
+const CartMiddleQty = styled.div`
   margin-top: ${(props) => (props.overlay ? "34px" : "36px")};
   margin-bottom: ${(props) => (props.overlay ? "34px" : "36px")};
 `;
 
-const StyledCartMiddleOperator = styled.div`
+const CartMiddleOperator = styled.div`
   font-family: Raleway;
   font-size: 16px;
   font-style: normal;
@@ -534,7 +525,7 @@ const StyledCartMiddleOperator = styled.div`
   cursor: pointer;
 `;
 
-const StyledCartImageContainer = styled.div`
+const ImageContainer = styled.div`
   width: ${(props) => (props.overlay ? "105px" : "141px")};
   height: ${(props) => (props.overlay ? "137px" : "185px")};
   overflow: hidden;
@@ -542,8 +533,8 @@ const StyledCartImageContainer = styled.div`
   margin-left: ${(props) => (props.overlay ? "10px" : "12px")};
 `;
 
-const StyledCartImage = styled.img``;
-const StyledImageNav = styled.div`
+const Image = styled.img``;
+const ImageNav = styled.div`
   position: relative;
   top: ${(props) => (props.overlay ? "-80px" : "-102px")};
   left: 0;
@@ -557,10 +548,17 @@ const StyledImageNav = styled.div`
     margin-left: 12px;
     margin-right: 12px;
     cursor: pointer;
+    color:white;
+    mix-blend-mode:difference;
   }
 `;
 
-const StyledCartButton = styled.button`
+const CartButton = styled.button`
   width: ${(props) => (props.overlay ? "24px" : "45px")};
   height: ${(props) => (props.overlay ? "24px" : "45px")};
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color:var(--c-white);
+  border:1px solid #1D1F22;
 `;

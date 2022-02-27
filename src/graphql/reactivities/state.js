@@ -21,12 +21,20 @@ export const cartItems = makeVar(
   JSON.parse(localStorage.getItem("cartItems")) || []
 );
 
+export const currentAttributes = makeVar(
+  JSON.parse(localStorage.getItem("currentAttributes")) || []
+);
+
 export const overlay = makeVar(
   JSON.parse(localStorage.getItem("overlay")) || false
 );
 
-export const favourites = makeVar(
-  JSON.parse(localStorage.getItem("favourites")) || []
+export const openCurrency = makeVar(
+  JSON.parse(localStorage.getItem("openCurrency")) || false
+);
+
+export const activateRemoveIcon = makeVar(
+  JSON.parse(localStorage.getItem("activateRemoveIcon")) || false
 );
 
 export const amount = makeVar(JSON.parse(localStorage.getItem("amount")) || 0);
@@ -34,6 +42,12 @@ export const amount = makeVar(JSON.parse(localStorage.getItem("amount")) || 0);
 export const articleCount = makeVar(
   JSON.parse(localStorage.getItem("articleCount")) || 0
 );
+
+export const getOpenCurrencyQuery = gql`
+  query getOpenCurrency {
+    openCurrency @client
+  }
+`;
 
 export const getFavouritesQuery = gql`
   query getFavourites {
@@ -44,6 +58,12 @@ export const getFavouritesQuery = gql`
 export const getCartItemsQuery = gql`
   query getCartItems {
     cartItems @client
+  }
+`;
+
+export const getCurrentAttributesQuery = gql`
+  query getCurrentAttributes {
+    currentAttributes @client
   }
 `;
 

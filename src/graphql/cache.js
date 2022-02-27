@@ -6,9 +6,11 @@ import {
   currentProductDetailsImage,
   overlay,
   cartItems,
-  favourites,
   amount,
   articleCount,
+  currentAttributes,
+  openCurrency,
+  activateRemoveIcon
 } from "./reactivities/state";
 
 // Here ,let's define our type and field poliies for our reactive variable.
@@ -27,9 +29,19 @@ export default new InMemoryCache({
             return currentCurrency();
           },
         },
+        openCurrency: {
+          read() {
+            return openCurrency();
+          },
+        },
         currentProduct: {
           read() {
             return currentProduct();
+          },
+        },
+        currentAttributes: {
+          read() {
+            return currentAttributes();
           },
         },
         currentProductDetailsImage: {
@@ -47,9 +59,9 @@ export default new InMemoryCache({
             return cartItems();
           },
         },
-        favourites: {
+        activateRemoveIcon: {
           read() {
-            return favourites();
+            return activateRemoveIcon();
           },
         },
         amount: {
