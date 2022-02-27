@@ -94,7 +94,7 @@ class Navigation extends Component {
               <img
                 width='6px'
                 height='3px'
-                src='assets/icons/downArrow.svg'
+                src={`${openCurrency()?'assets/icons/upArrow.svg':'assets/icons/downArrow.svg'}`}
                 alt='downArrowIcon'
               />
             </CurrencySwitcher>

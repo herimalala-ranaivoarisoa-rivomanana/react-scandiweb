@@ -34,14 +34,17 @@
 }
 
 @font-face {
+  font-family: "Roboto-medium";
+  src: url("./fonts/Roboto/Roboto-Medium.ttf");
+}
+
+@font-face {
   font-family: "Roboto-condensed-bold";
-  font-style:"normal";
   src: url("./fonts/Roboto/RobotoCondensed-Bold.ttf");
 }
 
 @font-face {
   font-family: "Roboto-condensed";
-  font-style:"normal";
   src: url("./fonts/Roboto/RobotoCondensed-Regular.ttf");
 }
 

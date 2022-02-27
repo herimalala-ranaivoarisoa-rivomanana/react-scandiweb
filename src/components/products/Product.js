@@ -14,6 +14,10 @@ import {
   cartItems,
   overlay,
   activateRemoveIcon,
+  amount,
+  currentCurrency,
+  articleCount,
+
 } from "../../graphql/reactivities/state";
 import { getCurrenciesQuery } from "../../graphql/queries/queries";
 
@@ -35,6 +39,20 @@ class Product extends Component {
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     activateRemoveIcon(false);
     localStorage.setItem("cartItems", activateRemoveIcon());
+    amount(0);
+    cartItems().map((item) =>
+      amount(
+        amount() +
+          item.qty *
+            item.product.prices.find(
+              (price) => price.currency.label === currentCurrency().label
+            ).amount
+      )
+    );
+    localStorage.setItem("amount", JSON.stringify(amount()));
+    articleCount(0);
+    cartItems().map((item) => articleCount(articleCount() + item.qty));
+    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
   }
   displayProduct() {
     const { product } = this.props;
@@ -45,9 +63,7 @@ class Product extends Component {
       return (
         <Link
           style={{ texDecoration: "none", cursor: "default" }}
-          to={`${
-            product.inStock ? (activateRemoveIcon() ? "" : "../product") : "/"
-          }`}
+          to={`${inCart?activateRemoveIcon()?'/':'../product':'../product'}`}
         >
           <StyledProductCardContainer
             onMouseOver={() => this.setState({ hover: true })}
@@ -100,12 +116,14 @@ class Product extends Component {
               />
             </CartIcon>
 
-            <LeaveWhiteBrooch inStock={product.inStock} overlay={overlay()}>
-              <OutOfStock inStock={product.inStock}>
-                <OutOfStockText inStock={product.inStock}>
+            <LeaveWhiteBrooch inStock={product.inStock}>
+              <Mask inStock={product.inStock}>
+              <OutOfStock>
+                <OutOfStockText >
                   OUT OF STOCK
                 </OutOfStockText>
               </OutOfStock>
+              </Mask>
             </LeaveWhiteBrooch>
           </StyledProductCardContainer>
         </Link>
@@ -210,7 +228,7 @@ top: -92px;
 left:303px;
 width:52px;
 height:52px;
-z-index:200;
+z-index:20;
 background-color:#5ECE7B;/* ${(props) =>
   props.inCart ? (props.hover ? "#ff7800 " : "#5ECE7B") : "#5ECE7B"}; */
 visibility:${(props) =>
@@ -245,18 +263,28 @@ const LeaveWhiteBrooch = styled.div`
   display: ${(props) => (props.inStock ? "none" : "flex")};
   justify-content: center;
   align-items: center;
-  top: -436px;
+  top: -452px;
   left: 15px;
   width: 356px;
   height: 338px;
-  background-color: ${(props) => (props.overlay ? "" : "var(--c-white)")};
-  opacity: 50%;
-  z-index: 10;
+  background-color:#FFFFFF;
+  opacity:50%;
+  z-index: 20;
+`;
+
+const Mask = styled.div`
+   display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 354px;
+  height: 330px;
+  background-color:#C4C4C4;
 `;
 
 const OutOfStock = styled.div`
   width: 356px;
   height: 39px;
+  margin:auto;
 `;
 const OutOfStockText = styled.p`
   font-family: Raleway;

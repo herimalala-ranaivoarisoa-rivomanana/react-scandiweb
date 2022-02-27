@@ -33,6 +33,8 @@ class ProductDetails extends Component {
     this.state = {};
     this.removeFromCart = this.removeFromCart.bind(this);
     this.checkAttributes();
+    currentProductDetailsImage("")
+    localStorage.setItem("currentProductDetailsImage", JSON.stringify(currentProductDetailsImage()));
   }
   changeImage(im) {
     currentProductDetailsImage(im);
@@ -93,8 +95,6 @@ class ProductDetails extends Component {
         JSON.stringify(currentAttributes())
       );
     }
-    currentProductDetailsImage("")
-    localStorage.setItem("currentProductDetailsImage", JSON.stringify(currentProductDetailsImage()));
   }
 
   checkAttributes() {
@@ -135,8 +135,6 @@ class ProductDetails extends Component {
     const currentAttributes =
       this.props.getCurrentAttributesQuery.currentAttributes;
 
-    console.log(product);
-    console.log(currentAttributes);
     return (
       <Layout>
         <Details>
@@ -293,7 +291,7 @@ class ProductDetails extends Component {
                 <StyledButton
                   onClick={() => {
                     if (
-                      product.attributes.length === currentAttributes.length
+                      product.attributes.length === currentAttributes.length && currentProduct().inStock
                     ) {
                       this.addToCart(product, currentAttributes);
                     }

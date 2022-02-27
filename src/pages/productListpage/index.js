@@ -107,12 +107,12 @@ class ProductsPage extends Component {
     }
   }
   setProduct(obj) {
-    if (obj.inStock) {
+    
       currentProduct(obj);
       overlay(false);
       localStorage.setItem("currentProduct", JSON.stringify(obj));
       localStorage.setItem("overlay", overlay());
-    }
+    
   }
   render() {
     articleCount(0);

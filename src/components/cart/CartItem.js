@@ -58,17 +58,17 @@ class CartItem extends Component {
     const cartItemsTemp = cartItems().filter(
       (cart) => cart.product.id !== this.state.product.id
     );
-    cartItems([
-      ...cartItemsTemp,
-      {
-        product: this.state.product,
+
+    const cartIndex= cartItems().indexOf(cartItems().find(cart=> cart.product.id === this.state.product.id));
+    cartItemsTemp.splice(cartIndex,0,{
+      product: this.state.product,
         attributes: [
           ...currentAttributesTemp,
           { name: attribute.name, id, value },
         ],
-        qty: this.state.qty,
-      },
-    ]);
+      qty: this.state.qty,
+    })
+    cartItems(cartItemsTemp)
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     this.setState((prevState) => ({
       ...prevState,
@@ -150,7 +150,7 @@ class CartItem extends Component {
   render() {
     const product = this.state.product;
     return (
-      <Cart overlay={overlay()}>
+        <Cart overlay={overlay()}>
         <CartDetails overlay={overlay()}>
           <ProductBrand overlay={overlay()}>{product.brand}</ProductBrand>
           <ProductName overlay={overlay()}>{product.name}</ProductName>
@@ -220,18 +220,17 @@ class CartItem extends Component {
                                     )
                                   }
                                   style={{
-                                    border: " 1px solid #A6A6A6",
                                     color:
-                                      this.state.attributes.length > 0 &&
-                                      this.state.attributes.find(
-                                        (att) => att.name === attribute.name
-                                      )
-                                        ? this.state.attributes.find(
-                                            (att) => att.name === attribute.name
-                                          ).id === item.id
-                                          ? "var(--c-white)"
-                                          : "#1D1F22"
-                                        : "#1D1F22",
+                                    this.state.attributes.length > 0 &&
+                                    this.state.attributes.find(
+                                      (att) => att.name === attribute.name
+                                    )
+                                      ? this.state.attributes.find(
+                                          (att) => att.name === attribute.name
+                                        ).id === item.id
+                                        ?!overlay()?"var(--c-white)"
+                                        :"#1D1F22"
+                                      :overlay()?"#A6A6A6": "":"#1D1F22",
                                     backgroundColor:
                                       this.state.attributes.length > 0 &&
                                       this.state.attributes.find(
@@ -240,9 +239,20 @@ class CartItem extends Component {
                                         ? this.state.attributes.find(
                                             (att) => att.name === attribute.name
                                           ).id === item.id
-                                          ? "#1D1F22"
+                                          ?!overlay()?"#1D1F22"
                                           : "var(--c-white)"
-                                        : "",
+                                        :overlay()?"rgba(166, 166, 166, 0.2)": "var(--c-white)":"",
+                                        border:
+                                        this.state.attributes.length > 0 &&
+                                        this.state.attributes.find(
+                                          (att) => att.name === attribute.name
+                                        )
+                                          ? this.state.attributes.find(
+                                              (att) => att.name === attribute.name
+                                            ).id === item.id
+                                            ?overlay()?" 1px solid #1D1F22"
+                                            :" 1px solid #A6A6A6"
+                                          :" 1px solid #A6A6A6":" 1px solid #A6A6A6",
                                   }}
                                   key={item.id}
                                 >
@@ -345,7 +355,9 @@ class CartItem extends Component {
           </ImageContainer>
         </CartRight>
       </Cart>
-    );
+ 
+    
+        );
   }
 }
 
@@ -357,6 +369,7 @@ export default compose(
   graphql(getCartItemsQuery, { name: "getCartItemsQuery" }),
   graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" })
 )(CartItem);
+
 
 const Cart = styled.div`
   display: flex;
@@ -380,53 +393,59 @@ const CartDetails = styled.div`
 `;
 
 const ProductBrand = styled.div`
+  font-family:${props=>props.overlay?"Raleway-light":"Raleway-semibold"};
   font-size: ${(props) => (props.overlay ? "16px" : "30px")};
-  font-style: normal;
-  /* font-weight:${(props) => (props.overlay ? "300" : "600")}; */
-  font-weight: ${(props) => (props.overlay ? "600" : "600")};
+  font-weight: ${(props) => (props.overlay ? "300" : "600")};
   line-height: ${(props) => (props.overlay ? "25.6px" : "27px")};
+  font-height:${props=>props.overlay ? "160%":"77%"};
   letter-spacing: 0px;
   text-align: left;
-  margin-bottom: ${(props) => (props.overlay ? "5px" : "16px")};
+  margin-top: ${(props) => (props.overlay ? "5px" : "20px")};
+  margin-bottom: ${(props) => (props.overlay ? "2px" : "16px")};
+  color:#1D1F22;
 `;
 
 const ProductName = styled.div`
-  font-size: ${(props) => (props.overlay ? "16px" : "30px")};
-  font-style: normal;
-  font-weight: ${(props) => (props.overlay ? "300" : "400")};
-  line-height: ${(props) => (props.overlay ? "25.6px" : "27px")};
-  letter-spacing: 0px;
-  text-align: left;
-  margin-bottom: ${(props) => (props.overlay ? "5px" : "16px")};
+font-family:${props=>props.overlay?"Raleway-light":"Raleway"};
+font-size: ${(props) => (props.overlay ? "16px" : "30px")};
+font-weight: ${(props) => (props.overlay ? "300" : "400")};
+line-height: ${(props) => (props.overlay ? "25.6px" : "27px")};
+font-height:${props=>props.overlay ? "160%":"77%"};
+letter-spacing: 0px;
+text-align: left;
+margin-bottom: ${(props) => (props.overlay ? "5px" : "26px")};
+color:#1D1F22;
 `;
 
 const Price = styled.div`
   display: flex;
   flex-direction: row;
-  margin-bottom: ${(props) => (props.overlay ? "27px" : "12px")};
+  margin-bottom: ${(props) => (props.overlay ? "27px" : "26px")};
 `;
 
 const PriceCurrency = styled.div`
-font-size:${(props) => (props.overlay ? "16px" : "24px")}
-font-style: normal;
+font-family:${(props) => (props.overlay ? "Raleway-medium" : "Raleway-bold")};
+font-size:${(props) => (props.overlay ? "16px" : "24px")};
 font-weight:${(props) => (props.overlay ? "500" : "700")};
-line-height:${(props) => (props.overlay ? "25.6px" : "18px")};
+line-height:${(props) => (props.overlay ? "26px" : "18px")};
+line-height:${(props) => (props.overlay ? "160%" : "64%")};
 letter-spacing: 0em;
 text-align: right;
 
 `;
 
 const PriceAmount = styled.div`
-font-size:${(props) => (props.overlay ? "16px" : "24px")}
-font-style: normal;
+font-family:${(props) => (props.overlay ? "Raleway-medium" : "Raleway-bold")};
+font-size:${(props) => (props.overlay ? "16px" : "24px")};
 font-weight:${(props) => (props.overlay ? "500" : "700")};
 line-height:${(props) => (props.overlay ? "25.6px" : "18px")};
+line-height:${(props) => (props.overlay ? "160%" : "64%")};
 letter-spacing: 0em;
 text-align: right;
 `;
 
 const AttributesContainer = styled.div`
-  ${(props) => (props.overlay ? "146.5px" : "900px")};
+ width: ${(props) => (props.overlay ? "146.5px" : "900px")};
   display: flex;
   flex-direction: column;
 `;
@@ -435,6 +454,7 @@ const Attributes = styled.li`
   width: ${(props) => (props.overlay ? "146.5px" : "900px")};
   display: flex;
   flex-direction: column;
+  margin-bottom:${(props) => (props.overlay ? "5px" : "16px")};
 `;
 
 const AttributesContents = styled.div`
@@ -451,7 +471,7 @@ const AttributesList = styled.ul`
 
 const AttributeValue = styled.li`
   min-width: ${(props) =>
-    props.overlay ? (props.swatch ? "12px" : "24px") : "63px"};
+    props.overlay ? (props.swatch ? "18px" : "24px") : "63px"};
   height: ${(props) => (props.overlay ? "24px" : "45px")};
   display: flex;
   margin-right: 12px;
@@ -545,8 +565,8 @@ const ImageNav = styled.div`
   flex-direction: row;
   justify-content: space-between;
   & img {
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: 9px;
+    margin-right: 9px;
     cursor: pointer;
     color:white;
     mix-blend-mode:difference;

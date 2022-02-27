@@ -56,6 +56,9 @@ class Cart extends Component {
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     return (
       <CardContainer overlay={overlay()}>
+        {!overlay()&&<PageTitle overlay={overlay()}>
+          CART
+        </PageTitle>}
         {overlay() && (
           <Title>
             <TitlePart1>My Bag </TitlePart1>
@@ -126,6 +129,22 @@ const CardContainer = styled.div`
   padding-bottom: 20px;
 `;
 
+const PageTitle = styled.div`
+width: 1098px;
+height:179px;
+padding-top:80px;
+margin-left:100px;
+font-family: Raleway-bold;
+font-size: 32px;
+font-weight: 700;
+line-height: 40px;
+letter-spacing: 0em;
+text-align: left;
+border-bottom: ${(props) => (props.overlay ? "none" : "2px solid #E5E5E5")};
+visibility:${props=>props.overlay?"hidden":"visible"};
+`
+
+
 const Title = styled.div`
   display: flex;
   flex-direction: row;
@@ -180,21 +199,22 @@ const Amount = styled.div`
   justify-content: space-between;
 `;
 const AmountLabel = styled.p`
-  font-family: Roboto;
+  font-family: Roboto-medium;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
+  line-height: 96%;
   letter-spacing: 0em;
   text-align: left;
 `;
 
 const AmountValue = styled.div`
-  font-family: Raleway;
+  font-family: Raleway-bold;
   font-size: 16px;
-  font-style: normal;
   font-weight: 700;
   line-height: 26px;
+  line-height: 160%;
   letter-spacing: 0em;
   text-align: right;
 `;
@@ -208,29 +228,39 @@ const CtaContainer = styled.div`
   margin-top: 35px;
   margin-botoom: 20px;
 `;
-const CtaCart = styled.button`
+const CtaCart = styled.div`
   width: 140px;
   height: 43px;
   text-align: center;
-  font-family: Raleway;
+  font-family: Raleway-semibold;
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
   line-height: 16.8px;
+  line-height: 120%;
   letter-spacing: 0em;
+  background-color:var(--c-white);
   color: #1d1f22;
   cursor: pointer;
+  border:1px solid #1D1F22;
+  display:flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-const CtaCheckout = styled.button`
+const CtaCheckout = styled.div`
+   display:flex;
+  justify-content: center;
+  align-items: center;
   width: 140px;
   height: 43px;
   text-align: center;
-  font-family: Raleway;
+  font-family: Raleway-semibold;
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
   line-height: 16.8px;
+  line-height: 120%;
   letter-spacing: 0em;
   background-color: #5ece7b;
   border: 1px solid #5ece7b;
