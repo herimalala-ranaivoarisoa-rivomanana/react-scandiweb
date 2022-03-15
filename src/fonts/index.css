@@ -1,0 +1,82 @@
+@font-face {
+  font-family: "Raleway";
+  src: url("./fonts/Raleway/static/Raleway-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-medium";
+  src: url("./fonts/Raleway/static/Raleway-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-light";
+  src: url("./fonts/Raleway/static/Raleway-Light.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-semibold";
+  src: url("./fonts/Raleway/static/Raleway-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-thin";
+  src: url("./fonts/Raleway/static/Raleway-Thin.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-bold";
+  src: url("./fonts/Raleway/static/Raleway-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Roboto-medium";
+  src: url("./fonts/Roboto/Roboto-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Roboto-condensed-bold";
+  src: url("./fonts/Roboto/RobotoCondensed-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Roboto-condensed";
+  src: url("./fonts/Roboto/RobotoCondensed-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Source Sans Pro";
+  src: url("./fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf");
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+:root {
+  --c-white: #ffffff;
+  --c-text: #1d1f22;
+  --c-gray: #8d8f9a;
+  --c-primary: #5ece7b;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  width: screen;
+  margin:auto;
+}
+
+a{
+  text-decoration: none;
+}

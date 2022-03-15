@@ -13,11 +13,10 @@ import {
   getFavouritesQuery,
   cartItems,
   overlay,
-  activateRemoveIcon,
+  activeIcon,
   amount,
   currentCurrency,
   articleCount,
-
 } from "../../graphql/reactivities/state";
 import { getCurrenciesQuery } from "../../graphql/queries/queries";
 
@@ -30,6 +29,41 @@ class Product extends Component {
       hover: false,
     };
   }
+  addToCart(product) {
+    const attributes = product.attributes.map((attribute) => {
+      return {
+        name: attribute.name,
+        id: attribute.items[0].id,
+        value: attribute.items[0].value,
+      };
+    });
+  /*   const cart = cartItems().find(
+      (cart) => cart.product.id === product.id
+    );
+    if (cart) {
+      const carteItemsTemps = cartItems().filter(
+        (item) => item.product.id !== product.id
+      );
+      cartItems([...carteItemsTemps, { product, attributes, qty: cart.qty }]);
+      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    } else {
+      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+      overlay(false);
+      articleCount(articleCount() + 1);
+      currentAttributes([]);
+      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+      localStorage.setItem("overlay", JSON.stringify(overlay()));
+      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+      localStorage.setItem(
+        "currentAttributes",
+        JSON.stringify(currentAttributes())
+      );
+    } */
+  }
   removeFromCart(product) {
     const cartItemsTemp = cartItems().filter(
       (cart) => cart.product.id !== product.id
@@ -37,8 +71,8 @@ class Product extends Component {
 
     cartItems([...cartItemsTemp]);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-    activateRemoveIcon(false);
-    localStorage.setItem("cartItems", activateRemoveIcon());
+    activeIcon(false);
+    localStorage.setItem("cartItems", activeIcon());
     amount(0);
     cartItems().map((item) =>
       amount(
@@ -57,13 +91,12 @@ class Product extends Component {
   displayProduct() {
     const { product } = this.props;
     const { currentCurrency } = this.props.getCurrentCurrencyQuery;
-
     if (product) {
       const inCart = cartItems().find((cart) => cart.product.id === product.id);
       return (
         <Link
           style={{ texDecoration: "none", cursor: "default" }}
-          to={`${inCart?activateRemoveIcon()?'/':'../product':'../product'}`}
+          to={`${activeIcon() ? "/" : "../product"}`}
         >
           <StyledProductCardContainer
             onMouseOver={() => this.setState({ hover: true })}
@@ -97,9 +130,11 @@ class Product extends Component {
               inCart={inCart}
               inStock={product.inStock}
               hover={this.state.hover}
-              onMouseOver={() => (inCart ? activateRemoveIcon(true) : null)}
-              onMouseLeave={() => (inCart ? activateRemoveIcon(false) : null)}
-              onClick={() => this.removeFromCart(product)}
+              onMouseOver={() => activeIcon(true)}
+              onMouseLeave={() => activeIcon(false)}
+              onClick={() =>
+                inCart ? this.removeFromCart(product) : this.addToCart(product)
+              }
             >
               <AddToCartIconImage
                 onMouseOver={() => (this.hover = true)}
@@ -107,7 +142,7 @@ class Product extends Component {
                 hover
                 src={`${
                   inCart
-                    ? activateRemoveIcon()
+                    ? activeIcon()
                       ? "assets/icons/cart/basket-.svg"
                       : "assets/icons/cart/emptycart1.svg"
                     : "assets/icons/cart/emptycart1.svg"
@@ -118,11 +153,9 @@ class Product extends Component {
 
             <LeaveWhiteBrooch inStock={product.inStock}>
               <Mask inStock={product.inStock}>
-              <OutOfStock>
-                <OutOfStockText >
-                  OUT OF STOCK
-                </OutOfStockText>
-              </OutOfStock>
+                <OutOfStock>
+                  <OutOfStockText>OUT OF STOCK</OutOfStockText>
+                </OutOfStock>
               </Mask>
             </LeaveWhiteBrooch>
           </StyledProductCardContainer>
@@ -164,7 +197,8 @@ const ProductCard = styled.div`
 `;
 const ProductImageContainer = styled.div`
   overflow: hidden;
-  object-fit: contain;
+  /*   object-fit: cover; */
+  text-align: center;
   width: 354px;
   height: 330px;
   margin-bottom: 24px;
@@ -172,6 +206,8 @@ const ProductImageContainer = styled.div`
 `;
 
 const ProductImage = styled.img`
+  object-fit: cover;
+  object-position: center;
   width: 354px;
   height: 330px;
 `;
@@ -267,24 +303,24 @@ const LeaveWhiteBrooch = styled.div`
   left: 15px;
   width: 356px;
   height: 338px;
-  background-color:#FFFFFF;
-  opacity:50%;
+  background-color: #ffffff;
+  opacity: 50%;
   z-index: 20;
 `;
 
 const Mask = styled.div`
-   display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   width: 354px;
   height: 330px;
-  background-color:#C4C4C4;
+  background-color: #c4c4c4;
 `;
 
 const OutOfStock = styled.div`
   width: 356px;
   height: 39px;
-  margin:auto;
+  margin: auto;
 `;
 const OutOfStockText = styled.p`
   font-family: Raleway;

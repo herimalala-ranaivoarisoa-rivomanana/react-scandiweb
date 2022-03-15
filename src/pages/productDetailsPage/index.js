@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import _ from "lodash";
+
 import { Link } from "react-router-dom";
 
 import { graphql } from "@apollo/client/react/hoc";
@@ -31,10 +33,13 @@ class ProductDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.removeFromCart = this.removeFromCart.bind(this);
     this.checkAttributes();
-    currentProductDetailsImage("")
-    localStorage.setItem("currentProductDetailsImage", JSON.stringify(currentProductDetailsImage()));
+    this.removeFromCart = this.removeFromCart.bind(this);
+    currentProductDetailsImage("");
+    localStorage.setItem(
+      "currentProductDetailsImage",
+      JSON.stringify(currentProductDetailsImage())
+    );
   }
   changeImage(im) {
     currentProductDetailsImage(im);
@@ -54,10 +59,15 @@ class ProductDetails extends Component {
     const currentAttributesTemp = currentAttributes().filter(
       (item) => item.name !== attribute.name
     );
-    currentAttributes([
-      ...currentAttributesTemp,
-      { name: attribute.name, id, value },
-    ]);
+
+  const attributeIndex = currentAttributes().indexOf( currentAttributes().find(
+    (item) => item.name === attribute.name
+  ))
+  currentAttributesTemp.splice(attributeIndex, 0,{
+    name: attribute.name, id, value 
+  });
+
+  currentAttributes(currentAttributesTemp)
     localStorage.setItem(
       "currentAttributes",
       JSON.stringify(currentAttributes())
@@ -65,36 +75,35 @@ class ProductDetails extends Component {
   }
 
   addToCart(product, attributes) {
-    const cart = cartItems().find(
-      (cart) => cart.product.id === currentProduct().id
+    cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+    overlay(false);
+    articleCount(articleCount() + 1);
+    currentAttributes([]);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+    localStorage.setItem("overlay", JSON.stringify(overlay()));
+    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
+    localStorage.setItem(
+      "currentAttributes",
+      JSON.stringify(currentAttributes())
     );
-    if (cart) {
-      const carteItemsTemps = cartItems().filter(
-        (item) => item.product.id !== product.id
-      );
-      cartItems([...carteItemsTemps, { product, attributes, qty: cart.qty }]);
-      overlay(false);
-      currentAttributes([]);
-      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-      localStorage.setItem("overlay", JSON.stringify(overlay()));
-      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-      localStorage.setItem(
-        "currentAttributes",
-        JSON.stringify(currentAttributes())
-      );
-    } else {
-      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
-      overlay(false);
-      articleCount(articleCount() + 1);
-      currentAttributes([]);
-      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-      localStorage.setItem("overlay", JSON.stringify(overlay()));
-      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-      localStorage.setItem(
-        "currentAttributes",
-        JSON.stringify(currentAttributes())
-      );
-    }
+  }
+
+  isActiveAttributes(product) {
+    const sortObject = obj => {
+      const sorter = (a, b) => {
+         return obj[a] - obj[b];
+      };
+      const keys = Object.keys(obj);
+      keys.sort(sorter);
+      const res = {};
+      keys.forEach(key => {
+         res[key] = obj[key];
+      });
+      return res;
+   };
+    let carts = cartItems().filter(cart=>cart.product.id===product.id && _.isEqual(sortObject(currentAttributes()),sortObject(cart.attributes)) )
+     if (carts.length>0) return true
+     else return false
   }
 
   checkAttributes() {
@@ -134,7 +143,6 @@ class ProductDetails extends Component {
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
     const currentAttributes =
       this.props.getCurrentAttributesQuery.currentAttributes;
-
     return (
       <Layout>
         <Details>
@@ -268,9 +276,7 @@ class ProductDetails extends Component {
                 })}
               </AttributesContainer>
               <Price>
-                <PriceTitle>
-                  PRICE:
-                </PriceTitle>
+                <PriceTitle>PRICE:</PriceTitle>
                 <PriceValue>
                   {currency.symbol}
                   {
@@ -291,32 +297,21 @@ class ProductDetails extends Component {
                 <StyledButton
                   onClick={() => {
                     if (
-                      product.attributes.length === currentAttributes.length && currentProduct().inStock
+                      product.attributes.length === currentAttributes.length &&
+                      !this.isActiveAttributes(product)
                     ) {
                       this.addToCart(product, currentAttributes);
+                    } else {
+                      this.removeFromCart(product);
                     }
                   }}
+                  removing={this.isActiveAttributes(product) ? true : false}
                 >
-                  {cartItems().find(
-                    (cart) => cart.product.id === currentProduct().id
-                  )
-                    ? "SAVE CHANGE"
+                  {this.isActiveAttributes(product)
+                    ? "REMOVE FROM CART"
                     : "ADD TO CART"}
                 </StyledButton>
               </Link>
-
-              {cartItems().find(
-                (cart) => cart.product.id === currentProduct().id
-              ) ? (
-                <Link to='/products'>
-                  <StyledButton
-                    onClick={() => this.removeFromCart(product)}
-                    removing='true'
-                  >
-                    REMOVE FROM CART
-                  </StyledButton>
-                </Link>
-              ) : null}
               <Description
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />

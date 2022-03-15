@@ -33,8 +33,8 @@ export const openCurrency = makeVar(
   JSON.parse(localStorage.getItem("openCurrency")) || false
 );
 
-export const activateRemoveIcon = makeVar(
-  JSON.parse(localStorage.getItem("activateRemoveIcon")) || false
+export const activeIcon = makeVar(
+  JSON.parse(localStorage.getItem("activeIcon")) || false
 );
 
 export const amount = makeVar(JSON.parse(localStorage.getItem("amount")) || 0);

@@ -16,6 +16,7 @@ import {
   overlay,
   articleCount,
   cartItems,
+  currentAttributes,
 } from "../../graphql/reactivities/state";
 import {
   getCategoryQuery,

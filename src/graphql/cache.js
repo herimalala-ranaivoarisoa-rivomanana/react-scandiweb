@@ -10,7 +10,7 @@ import {
   articleCount,
   currentAttributes,
   openCurrency,
-  activateRemoveIcon
+  activeIcon
 } from "./reactivities/state";
 
 // Here ,let's define our type and field poliies for our reactive variable.
@@ -59,9 +59,9 @@ export default new InMemoryCache({
             return cartItems();
           },
         },
-        activateRemoveIcon: {
+        activeIcon: {
           read() {
-            return activateRemoveIcon();
+            return activeIcon();
           },
         },
         amount: {
