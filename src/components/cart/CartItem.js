@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+import { graphql } from "@apollo/client/react/hoc";
+import compose from "lodash.flowright";
+
 import {
-  currentCurrency,
+  getCurrentCurrencyQuery,
   cartItems,
   amount,
   overlay,
@@ -78,22 +81,21 @@ class CartItem extends Component {
         prevState.galleryIndex - 1 > 0 ? prevState.galleryIndex - 1 : 0,
     }));
   }
-
+  
   render() {
     const product = this.props.cart.product;
-    console.log(this.props.cart.attributes);
-    console.log(product);
+    const {currentCurrency} = this.props.getCurrentCurrencyQuery;
     return (
       <Cart overlay={overlay()}>
         <CartDetails overlay={overlay()}>
           <ProductBrand overlay={overlay()}>{product.brand}</ProductBrand>
           <ProductName overlay={overlay()}>{product.name}</ProductName>
           <Price overlay={overlay()}>
-            <PriceCurrency>{currentCurrency().symbol}</PriceCurrency>
+            <PriceCurrency>{currentCurrency.symbol}</PriceCurrency>
             <PriceAmount>
               {
                 product.prices.find(
-                  (price) => price.currency.label === currentCurrency().label
+                  (price) => price.currency.label === currentCurrency.label
                 ).amount
               }
             </PriceAmount>
@@ -201,72 +203,70 @@ class CartItem extends Component {
             </AttributesContainer>
           </section>
         </CartDetails>
-        <CartMiddle overlay={overlay()}>
-          <CartMiddleOperator overlay={overlay()}>
-            <CartButton
-              overlay={overlay()}
-              onClick={(e) => this.addQuantity(e, this.props.cart)}
-            >
+          <CartMiddle overlay={overlay()}>
+            <CartMiddleOperator overlay={overlay()}>
+              <CartButton
+                overlay={overlay()}
+                onClick={(e) => this.addQuantity(e, this.props.cart)}
+              >
+                <img
+                  width='12px'
+                  height='12px'
+                  src='assets/icons/plus-line.svg'
+                  alt='Plus'
+                />
+              </CartButton>
+            </CartMiddleOperator>
+            <CartMiddleQty overlay={overlay()}>
+              {this.props.cart.qty}
+            </CartMiddleQty>
+            <CartMiddleOperator overlay={overlay()}>
+              <CartButton
+                overlay={overlay()}
+                onClick={(e) => this.removeQuantity(e, this.props.cart)}
+                style={{
+                  backgroundColor: this.props.cart.qty === 1 ? "#ff7800" : "",
+                  border: this.props.cart.qty === 1 ? "#ff7800" : "",
+                }}
+              >
+                <img
+                  width='12px'
+                  height='12px'
+                  src='assets/icons/minus-line.svg'
+                  alt='minus'
+                />
+              </CartButton>
+            </CartMiddleOperator>
+
+          </CartMiddle>
+          <Gallery overlay={overlay()} url={product.gallery[this.state.galleryIndex]}>
+              <ImageNav overlay={overlay()}>
               <img
-                width='12px'
-                height='12px'
-                src='assets/icons/plus-line.svg'
-                alt='Plus'
+                src='assets/icons/leftArrow.svg'
+                onClick={(e) => this.galleryIndexDown(e)}
+                alt='gallery'
               />
-            </CartButton>
-          </CartMiddleOperator>
-          <CartMiddleQty overlay={overlay()}>
-            {this.props.cart.qty}
-          </CartMiddleQty>
-          <CartMiddleOperator overlay={overlay()}>
-            <CartButton
-              overlay={overlay()}
-              onClick={(e) => this.removeQuantity(e, this.props.cart)}
-              style={{
-                backgroundColor: this.props.cart.qty === 1 ? "#ff7800" : "",
-                border: this.props.cart.qty === 1 ? "#ff7800" : "",
-              }}
-            >
               <img
-                width='12px'
-                height='12px'
-                src='assets/icons/minus-line.svg'
-                alt='minus'
+                src='assets/icons/rightArrow.svg'
+                onClick={(e) => this.galleryIndexUp(e)}
+                alt='gallery'
+                visible={true}
               />
-            </CartButton>
-          </CartMiddleOperator>
-        </CartMiddle>
-        <Gallery
-          overlay={overlay()}
-          url={product.gallery[this.state.galleryIndex]}
-        >
-          <ImageNav overlay={overlay()}>
-            <img
-              src='assets/icons/leftArrow.svg'
-              onClick={(e) => this.galleryIndexDown(e)}
-              alt='gallery'
-            />
-            <img
-              src='assets/icons/rightArrow.svg'
-              onClick={(e) => this.galleryIndexUp(e)}
-              alt='gallery'
-              visible={true}
-            />
-          </ImageNav>
-        </Gallery>
+            </ImageNav>
+          </Gallery>
       </Cart>
     );
   }
 }
 
-export default CartItem;
+export default compose(graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'})) (CartItem);
 
 const Cart = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: ${(props) => (props.overlay ? "293px" : "1098px")};
-  min-height: ${(props) => (props.overlay ? "137px" : "225px")};
+  min-height:${(props) => (props.overlay ? "137px" : "225px")};
   margin-bottom: ${(props) => (props.overlay ? "41px" : "0")};
   padding-top: ${(props) => (props.overlay ? "0" : "20px")};
   padding-bottom: ${(props) => (props.overlay ? "0" : "20px")};
@@ -428,25 +428,24 @@ const CartMiddleOperator = styled.div`
 
 const Gallery = styled.div`
   width: ${(props) => (props.overlay ? "105px" : "141px")};
-  height: ${(props) => (props.overlay ? "137px" : "141px")};
+  height:${(props) => (props.overlay ? "137px" : "141px")};
   margin-left: ${(props) => (props.overlay ? "10px" : "12px")};
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-image: ${(props) => `URL(${props.url})`};
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  &:before{
+    content:'';
+    position:absolute;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
+    background-image:${props=>`URL(${props.url})`};
     background-size: 105px auto, cover;
-    background-repeat: no-repeat;
-    opacity: 0.75;
-  }
+    background-repeat:no-repeat;
+    opacity:0.75;  }
 `;
 
 const ImageNav = styled.div`
@@ -455,13 +454,13 @@ const ImageNav = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  & img {
+    & img {  
     margin-left: 9px;
     margin-right: 9px;
     cursor: pointer;
     color: white;
     mix-blend-mode: difference;
-  }
+  } 
 `;
 
 const CartButton = styled.button`
