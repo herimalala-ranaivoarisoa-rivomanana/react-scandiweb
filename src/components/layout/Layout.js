@@ -5,7 +5,6 @@ import Header from "./header/Header";
 import Navigation from "./navigation/navigation";
 
 import {
-  getOverlayQuery,
   getOpenCurrencyQuery,
   overlay,
   openCurrency,
@@ -32,7 +31,6 @@ class Layout extends Component {
 }
 
 export default compose(
-  graphql(getOverlayQuery, { name: "getOverlayQuery" }),
   graphql(getOpenCurrencyQuery, { name: "getOpenCurrencyQuery" })
 )(Layout);
 

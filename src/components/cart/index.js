@@ -52,7 +52,7 @@ class Cart extends Component {
     return (
       <ClickAwayListener
         nodeRef={this.nodebtn}
-        onClickAway={() => overlay(false)}
+        onClickAway={this.leaveOverlay}
       >
         <CardContainer className='overlay' overlay={overlay()}>
           {!overlay() && <PageTitle overlay={overlay()}>CART</PageTitle>}

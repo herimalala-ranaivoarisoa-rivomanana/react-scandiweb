@@ -9,16 +9,12 @@ import { getCategoriesQuery } from "../../../graphql/queries/queries";
 
 import {
   getCurrentCurrencyQuery,
-  getCurrentCategoryQuery,
-  getCartItemsQuery,
-  getOverlayQuery,
-  getOpenCurrencyQuery,
   getArticleCountQuery,
   overlay,
   openCurrency,
   currentCategory,
   currentAttributes,
-  cartItems
+  cartItems,
 } from "../../../graphql/reactivities/state";
 
 class Navigation extends Component {
@@ -57,15 +53,21 @@ class Navigation extends Component {
   setCategory(name) {
     currentCategory(name);
     localStorage.setItem("currentCategory", JSON.stringify(name));
-    currentAttributes([])
-    localStorage.setItem("currentAttributes", JSON.stringify(currentAttributes()));
+    currentAttributes([]);
+    localStorage.setItem(
+      "currentAttributes",
+      JSON.stringify(currentAttributes())
+    );
   }
 
   viewCartOverlay() {
     overlay(true);
-    localStorage.setItem("overlay",overlay());
-    currentAttributes([])
-    localStorage.setItem("currentAttributes", JSON.stringify(currentAttributes()));
+    localStorage.setItem("overlay", overlay());
+    currentAttributes([]);
+    localStorage.setItem(
+      "currentAttributes",
+      JSON.stringify(currentAttributes())
+    );
   }
 
   viewCurrency() {
@@ -74,7 +76,7 @@ class Navigation extends Component {
   }
 
   render() {
-    const { articleCount } = this.props.getArticlaCountQuery;
+    const { articleCount } = this.props.getArticleCountQuery;
     const { currentCurrency } = this.props.getCurrentCurrencyQuery;
     return (
       <Navbar>
@@ -94,12 +96,18 @@ class Navigation extends Component {
               <img
                 width='6px'
                 height='3px'
-                src={`${openCurrency()?'assets/icons/upArrow.svg':'assets/icons/downArrow.svg'}`}
+                src={`${
+                  openCurrency()
+                    ? "assets/icons/upArrow.svg"
+                    : "assets/icons/downArrow.svg"
+                }`}
                 alt='downArrowIcon'
               />
             </CurrencySwitcher>
             <Link to='/'>
-              <CartIcon onClick={cartItems().length>0?this.viewCartOverlay:null}>
+              <CartIcon
+                onClick={cartItems().length > 0 ? this.viewCartOverlay : null}
+              >
                 <img
                   width='20px'
                   height='20px'
@@ -109,7 +117,7 @@ class Navigation extends Component {
               </CartIcon>
             </Link>
           </Action>
-         {articleCount>0 && <Counter>{articleCount}</Counter>}
+          {articleCount > 0 && <Counter>{articleCount}</Counter>}
         </ActionContainer>
       </Navbar>
     );
@@ -119,11 +127,7 @@ class Navigation extends Component {
 export default compose(
   graphql(getCategoriesQuery, { name: "getCategoriesQuery" }),
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
-  graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
-  graphql(getCartItemsQuery, { name: "getCartItemsQuery" }),
-  graphql(getOverlayQuery, { name: "getOverlayQuery" }),
-  graphql(getOpenCurrencyQuery, { name: "getOpenCurrencyQuery" }),
-  graphql(getArticleCountQuery, { name: "getArticlaCountQuery" })
+  graphql(getArticleCountQuery, { name: "getArticleCountQuery" })
 )(Navigation);
 
 const Navbar = styled.nav`
@@ -154,7 +158,7 @@ const CategoriesList = styled.ul`
 `;
 const CategoriesListItem = styled.li`
   height: 100%;
-  font-family:  ${(props) => (props.active ? "Raleway-semibold" : "Raleway")};
+  font-family: ${(props) => (props.active ? "Raleway-semibold" : "Raleway")};
   font-size: 16px;
   font-style: normal;
   font-weight: ${(props) => (props.active ? "600" : "400")};

@@ -23,12 +23,17 @@ class Currency extends Component {
     localStorage.setItem("openCurrency", JSON.stringify(openCurrency()));
   }
 
+  leaveOverlay(){
+    openCurrency(false);
+    localStorage.setItem("openCurrency", JSON.stringify(openCurrency()));
+  }
+
   render() {
     const { currencies } = this.props.getCurrenciesQuery;
     return (
       <ClickAwayListener
       nodeRef={this.nodebtn}
-      onClickAway={()=>openCurrency(false)}
+      onClickAway={this.leaveOverlay}
       >
         <CurrencyList ref={this.insideContainer}>
           {currencies &&
