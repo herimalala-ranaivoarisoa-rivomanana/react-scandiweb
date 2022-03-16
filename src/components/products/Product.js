@@ -43,32 +43,6 @@ class Product extends Component {
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-  /*   const cart = cartItems().find(
-      (cart) => cart.product.id === product.id
-    );
-    if (cart) {
-      const carteItemsTemps = cartItems().filter(
-        (item) => item.product.id !== product.id
-      );
-      cartItems([...carteItemsTemps, { product, attributes, qty: cart.qty }]);
-      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-      localStorage.setItem(
-        "currentAttributes",
-        JSON.stringify(currentAttributes())
-      );
-    } else {
-      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
-      overlay(false);
-      articleCount(articleCount() + 1);
-      currentAttributes([]);
-      localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-      localStorage.setItem("overlay", JSON.stringify(overlay()));
-      localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-      localStorage.setItem(
-        "currentAttributes",
-        JSON.stringify(currentAttributes())
-      );
-    } */
   }
   removeFromCart(product) {
     const cartItemsTemp = cartItems().filter(

@@ -1,20 +1,15 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 
 import _ from "lodash";
-
-import { Link } from "react-router-dom";
 
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 
 import {
   getCurrentCurrencyQuery,
-  getCurrentCategoryQuery,
   getCurrentProductQuery,
-  getCurrentProductDetailsImageQuery,
-  getOverlayQuery,
   currentProduct,
   getCurrentAttributesQuery,
   currentProductDetailsImage,
@@ -23,10 +18,6 @@ import {
   articleCount,
   currentAttributes,
 } from "../../graphql/reactivities/state";
-import {
-  getCategoriesQuery,
-  getCurrenciesQuery,
-} from "../../graphql/queries/queries";
 
 import Layout from "../../components/layout/Layout";
 
@@ -150,7 +141,7 @@ class ProductDetails extends Component {
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
     const currentAttributes =
       this.props.getCurrentAttributesQuery.currentAttributes;
-    console.log(product)
+    console.log(product);
     return (
       <Layout>
         <Details>
@@ -293,12 +284,14 @@ class ProductDetails extends Component {
                 </PriceValue>
               </Price>
 
-                {product.inStock?<StyledButton
+              {product.inStock ? (
+                <StyledButton
                   onClick={() => {
                     if (
                       (product.attributes.length === currentAttributes.length &&
-                      !this.isActiveAttributes(product) &&
-                      product.inStock)|| product.attributes===[]
+                        !this.isActiveAttributes(product) &&
+                        product.inStock) ||
+                      product.attributes === []
                     ) {
                       this.addToCart(product, currentAttributes);
                     } else {
@@ -313,15 +306,13 @@ class ProductDetails extends Component {
                 >
                   {this.isActiveAttributes(product)
                     ? "REMOVE FROM CART"
-                    :"ADD TO CART"}
-                </StyledButton>:
+                    : "ADD TO CART"}
+                </StyledButton>
+              ) : (
                 <OutOfStock>THIS PRODUCT IS OUT OF STOCK</OutOfStock>
-                
-                }
+              )}
 
-              <Description>
-                {parse(product.description)}
-              </Description>
+              <Description>{parse(product.description)}</Description>
             </Content>
           </DetailsContainer>
           <GalleryContainer></GalleryContainer>
@@ -332,16 +323,9 @@ class ProductDetails extends Component {
 }
 
 export default compose(
-  graphql(getCurrenciesQuery, { name: "getCurrenciesQuery" }),
-  graphql(getCategoriesQuery, { name: "getCategoriesQuery" }),
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
-  graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
   graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
-  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" }),
-  graphql(getCurrentProductDetailsImageQuery, {
-    name: "getCurrentProductDetailsImageQueryy",
-  }),
-  graphql(getOverlayQuery, { name: "getCartItemsQuery" })
+  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" })
 )(ProductDetails);
 
 const Details = styled.div`
@@ -391,11 +375,11 @@ const ImageContainer = styled.div`
 `;
 
 const Image = styled.img`
-  width:610px;
-  height:auto;
+  width: 610px;
+  height: auto;
   margin-left: 40px;
   margin-right: 100px;
-  object-fit:cover;
+  object-fit: cover;
 `;
 
 const Content = styled.div`
@@ -530,19 +514,19 @@ border:0;
 margin-bottom:40px;
 cursor:pointer;
 }
-`
+`;
 const OutOfStock = styled.div`
-font-family: Raleway-semibold;
-font-size: 16px;
-font-style: normal;
-font-weight: 600;
-line-height: 19.2px;
-line-height: 120%px;
-letter-spacing: 0em;
-text-align: center;
-margin-bottom:40px;
-color:#ff7800;
-`
+  font-family: Raleway-semibold;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19.2px;
+  line-height: 120%px;
+  letter-spacing: 0em;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #ff7800;
+`;
 
 const Description = styled.div`
   font-family: Roboto;

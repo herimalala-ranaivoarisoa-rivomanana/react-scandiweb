@@ -9,14 +9,11 @@ import {
   getCurrentCurrencyQuery,
   getCurrentCategoryQuery,
   currentCategory,
-  getCurrentProductQuery,
-  getCartItemsQuery,
   getOverlayQuery,
   currentProduct,
   overlay,
   articleCount,
   cartItems,
-  currentAttributes,
 } from "../../graphql/reactivities/state";
 import {
   getCategoryQuery,
@@ -108,12 +105,10 @@ class ProductsPage extends Component {
     }
   }
   setProduct(obj) {
-    
-      currentProduct(obj);
-      overlay(false);
-      localStorage.setItem("currentProduct", JSON.stringify(obj));
-      localStorage.setItem("overlay", overlay());
-    
+    currentProduct(obj);
+    overlay(false);
+    localStorage.setItem("currentProduct", JSON.stringify(obj));
+    localStorage.setItem("overlay", overlay());
   }
   render() {
     articleCount(0);
@@ -129,8 +124,6 @@ export default compose(
   graphql(getCategoriesQuery, { name: "getCategoriesQuery" }),
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
-  graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
-  graphql(getCartItemsQuery, { name: "getCartItemsQuery" }),
   graphql(getOverlayQuery, { name: "getOverlayQuery" }),
   graphql(getCategoryQuery, {
     name: "getCategoryQuery",
@@ -177,7 +170,7 @@ const ProductsListContainer = styled.ul`
   width: 1440px; */
   width: 1240px;
   margin: auto;
-  margin-top:102px;
+  margin-top: 102px;
   margin-bottom: 83px;
   display: grid;
   grid-template-columns: [col0] 386px [col1] 386px [col2] 386px[col3];
