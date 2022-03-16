@@ -177,7 +177,7 @@ const ProductsListContainer = styled.ul`
   width: 1440px; */
   width: 1240px;
   margin: auto;
-  margin-top: 63px;
+  margin-top:102px;
   margin-bottom: 83px;
   display: grid;
   grid-template-columns: [col0] 386px [col1] 386px [col2] 386px[col3];

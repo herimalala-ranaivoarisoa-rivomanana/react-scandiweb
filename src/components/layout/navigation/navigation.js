@@ -208,8 +208,8 @@ const Action = styled.div`
 
 const CurrencySwitcher = styled.div`
   height: 29px;
-  width: 38px;
-  margin-left: 124px;
+  width: 28px;
+  margin-left: 134px;
   border-radius: 0px;
   display: flex;
   flex-direction: row;
@@ -218,7 +218,7 @@ const CurrencySwitcher = styled.div`
   cursor: pointer;
 `;
 const Symbol = styled.div`
-  width: 32px;
+  width: 22px;
   height: 29px;
   font-family: Raleway;
   font-size: 18px;
@@ -226,7 +226,7 @@ const Symbol = styled.div`
   font-weight: 500;
   line-height: 29px;
   letter-spacing: 0em;
-  text-align: center;
+  text-align: left;
   overflow: hidden;
   object-fit: contain;
 `;

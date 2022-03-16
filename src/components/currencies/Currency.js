@@ -3,32 +3,22 @@ import styled from "styled-components";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 
+import ClickAwayListener from "../ClickAwayLIstner";
+
 import {
   getCurrentCurrencyQuery,
   currentCurrency,
-  cartItems,
-  amount,
   openCurrency,
 } from "../../graphql/reactivities/state";
 import { getCurrenciesQuery } from "../../graphql/queries/queries";
 
 class Currency extends Component {
+  nodebtn=undefined;
   setCurrentCurrency(obj) {
     const { currencies } = this.props.getCurrenciesQuery;
     var currency = currencies.find((item) => item.label === obj.label);
     currentCurrency(currency);
     localStorage.setItem("currentCurrency", JSON.stringify(currency));
-    amount(0);
-    cartItems().map((item) =>
-      amount(
-        amount() +
-          item.qty *
-            item.product.prices.find(
-              (price) => price.currency.label === currentCurrency().label
-            ).amount
-      )
-    );
-    localStorage.setItem("amount", JSON.stringify(amount()));
     openCurrency(false);
     localStorage.setItem("openCurrency", JSON.stringify(openCurrency()));
   }
@@ -36,20 +26,25 @@ class Currency extends Component {
   render() {
     const { currencies } = this.props.getCurrenciesQuery;
     return (
-      <CurrencyList>
-        {currencies &&
-          currencies.map((currency) => {
-            return (
-              <CurrencyItem
-                onClick={(e) => this.setCurrentCurrency(currency)}
-                key={currency.label}
-              >
-                <CurrencySymbol>{currency.symbol}</CurrencySymbol>
-                <CurrencyLabel>{currency.label}</CurrencyLabel>
-              </CurrencyItem>
-            );
-          })}
-      </CurrencyList>
+      <ClickAwayListener
+      nodeRef={this.nodebtn}
+      onClickAway={()=>openCurrency(false)}
+      >
+        <CurrencyList ref={this.insideContainer}>
+          {currencies &&
+            currencies.map((currency) => {
+              return (
+                <CurrencyItem
+                  onClick={(e) => this.setCurrentCurrency(currency)}
+                  key={currency.label}
+                >
+                  <CurrencySymbol>{currency.symbol}</CurrencySymbol>
+                  <CurrencyLabel>{currency.label}</CurrencyLabel>
+                </CurrencyItem>
+              );
+            })}
+        </CurrencyList>
+      </ClickAwayListener>
     );
   }
 }
@@ -60,16 +55,17 @@ export default compose(
 
 const CurrencyList = styled.div`
   position: absolute;
+  top: 65px;
+  left: 1360px;
+  z-index: 200;
   display: flex;
   flex-direction: column;
-  top: 65px;
-  left: 1356px;
-  z-index: 200;
+
   width: 114px;
   padding-top: 20px;
   paddign-left: 20px;
   background: var(--c-white);
-  box-shadow: 0px 4px 35px 0px #a8acb030;
+  box-shadow: 0px 4px 35px 0px rgba(57, 55, 72, 0.22);
 `;
 
 const CurrencyItem = styled.div`
@@ -78,14 +74,15 @@ const CurrencyItem = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  width: 54px;
-  padding: 0;
+  padding-left: 20px;
   margin: 0;
-  margin-left: 20px;
   margin-bottom: 21px;
   cursor: pointer;
   &:last-child {
     margin-bottom: 20px;
+  }
+    &:hover {
+    box-shadow:0px 4px 35px 2px #E5E5E5;
   }
 `;
 const CurrencySymbol = styled.div`

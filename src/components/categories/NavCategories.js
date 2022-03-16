@@ -8,7 +8,6 @@ import compose from "lodash.flowright";
 import {
   getCurrentCategoryQuery,
   currentCategory,
-  currentProductDetailsImage,
 } from "../../graphql/reactivities/state";
 import { getCategoriesQuery } from "../../graphql/queries/queries";
 
@@ -41,11 +40,6 @@ class NavCategory extends Component {
   setCategory(name) {
     currentCategory(name);
     localStorage.setItem("currentCategory", JSON.stringify(name));
-    currentProductDetailsImage("");
-    localStorage.setItem(
-      "currentProductDetailsImage",
-      JSON.stringify(currentProductDetailsImage())
-    );
   }
   render() {
     return <div>{this.displayCategories()}</div>;

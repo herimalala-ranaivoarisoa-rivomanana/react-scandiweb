@@ -5,11 +5,9 @@ import styled from "styled-components";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 
+import ClickAwayListener from "../ClickAwayLIstner";
+
 import {
-  getCurrentCurrencyQuery,
-  getCurrentCategoryQuery,
-  getCartItemsQuery,
-  getOverlayQuery,
   getAmountQuery,
   cartItems,
   overlay,
@@ -17,10 +15,6 @@ import {
   amount,
   articleCount,
 } from "../../graphql/reactivities/state";
-import {
-  getCategoriesQuery,
-  getCurrenciesQuery,
-} from "../../graphql/queries/queries";
 
 import CartItem from "./CartItem";
 
@@ -33,6 +27,7 @@ class Cart extends Component {
     amount();
     this.leaveOverlay = this.leaveOverlay.bind(this);
   }
+  nodebtn = undefined;
 
   leaveOverlay() {
     overlay(false);
@@ -55,65 +50,56 @@ class Cart extends Component {
     cartItems().map((item) => articleCount(articleCount() + item.qty));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     return (
-      <CardContainer overlay={overlay()}>
-        {!overlay()&&<PageTitle overlay={overlay()}>
-          CART
-        </PageTitle>}
-        {overlay() && (
-          <Title>
-            <TitlePart1>My Bag </TitlePart1>
-            <TitlePart2>
-              {cartItems().length} items{" "}
-            </TitlePart2>
-          </Title>
-        )}
-        <Content overlay={overlay()}>
-          {cartItems().map((cart) => {
-            return (
-              <Item key={cart.product.id}>
-                {" "}
-                <CartItem cart={cart} />
-              </Item>
-            );
-          })}
-        </Content>
-        {overlay() && (
-          <Amount>
-            <AmountLabel>Total</AmountLabel>
-            <AmountValue>
-              {currentCurrency().symbol}
-              {amount().toFixed(2)}
-            </AmountValue>
-          </Amount>
-        )}
-        {overlay() && (
-          <CtaContainer>
-            <Link to='/cart'>
-              <CtaCart onClick={this.leaveOverlay}>
-                VIEW BAG
-              </CtaCart>
-            </Link>
-            <Link to='/checkout'>
-              <CtaCheckout onClick={this.leaveOverlay}>
-                CHECK OUT
-              </CtaCheckout>
-            </Link>
-          </CtaContainer>
-        )}
-      </CardContainer>
+      <ClickAwayListener
+        nodeRef={this.nodebtn}
+        onClickAway={() => overlay(false)}
+      >
+        <CardContainer className='overlay' overlay={overlay()}>
+          {!overlay() && <PageTitle overlay={overlay()}>CART</PageTitle>}
+          {overlay() && (
+            <Title>
+              <TitlePart1>My Bag </TitlePart1>
+              <TitlePart2>{cartItems().length} items </TitlePart2>
+            </Title>
+          )}
+          <Content overlay={overlay()}>
+            {cartItems().map((cart, index) => {
+              return (
+                <Item key={index}>
+                  {" "}
+                  <CartItem cart={cart} />
+                </Item>
+              );
+            })}
+          </Content>
+          {overlay() && (
+            <Amount>
+              <AmountLabel>Total</AmountLabel>
+              <AmountValue>
+                {currentCurrency().symbol}
+                {amount().toFixed(2)}
+              </AmountValue>
+            </Amount>
+          )}
+          {overlay() && (
+            <CtaContainer>
+              <Link to='/cart'>
+                <CtaCart onClick={this.leaveOverlay}>VIEW BAG</CtaCart>
+              </Link>
+              <Link to='/checkout'>
+                <CtaCheckout onClick={this.leaveOverlay}>CHECK OUT</CtaCheckout>
+              </Link>
+            </CtaContainer>
+          )}
+        </CardContainer>
+      </ClickAwayListener>
     );
   }
 }
 
-export default compose(
-  graphql(getCurrenciesQuery, { name: "getCurrenciesQuery" }),
-  graphql(getCategoriesQuery, { name: "getCategoriesQuery" }),
-  graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
-  graphql(getCurrentCategoryQuery, { name: "getCurrentCategoryQuery" }),
-  graphql(getCartItemsQuery, { name: "getCartItemsQuery" }),
-  graphql(getOverlayQuery, { name: "getOverlayQuery" }),
-  graphql(getAmountQuery, { name: "getAmountQuery" })
-)(Cart);
+export default compose(graphql(getAmountQuery, { name: "getAmountQuery" }))(
+  Cart
+);
 
 const CardContainer = styled.div`
   position: ${(props) => (props.overlay ? "absolute" : "")};
@@ -130,20 +116,19 @@ const CardContainer = styled.div`
 `;
 
 const PageTitle = styled.div`
-width: 1098px;
-height:179px;
-padding-top:80px;
-margin-left:100px;
-font-family: Raleway-bold;
-font-size: 32px;
-font-weight: 700;
-line-height: 40px;
-letter-spacing: 0em;
-text-align: left;
-border-bottom: ${(props) => (props.overlay ? "none" : "2px solid #E5E5E5")};
-visibility:${props=>props.overlay?"hidden":"visible"};
-`
-
+  width: 1098px;
+  height: 179px;
+  padding-top: 80px;
+  margin-left: 100px;
+  font-family: Raleway-bold;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: 0em;
+  text-align: left;
+  border-bottom: ${(props) => (props.overlay ? "none" : "2px solid #E5E5E5")};
+  visibility: ${(props) => (props.overlay ? "hidden" : "visible")};
+`;
 
 const Title = styled.div`
   display: flex;
@@ -239,17 +224,17 @@ const CtaCart = styled.div`
   line-height: 16.8px;
   line-height: 120%;
   letter-spacing: 0em;
-  background-color:var(--c-white);
+  background-color: var(--c-white);
   color: #1d1f22;
   cursor: pointer;
-  border:1px solid #1D1F22;
-  display:flex;
+  border: 1px solid #1d1f22;
+  display: flex;
   justify-content: center;
   align-items: center;
 `;
 
 const CtaCheckout = styled.div`
-   display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   width: 140px;

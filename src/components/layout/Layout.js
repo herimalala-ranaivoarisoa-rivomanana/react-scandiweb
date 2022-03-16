@@ -17,16 +17,16 @@ import Currency from "../currencies/Currency";
 class Layout extends Component {
   render() {
     return (
-      <React.Fragment>
+      <>
         <Header>
           <Navigation />
+          {openCurrency() && <Currency />}
+          {overlay() && <Cart overlay={overlay()} />}
         </Header>
         <StyledMain overlay={overlay()}>
           {this.props.children}
-          {overlay() && <Cart overlay={overlay()} />}
-          {openCurrency() && <Currency />}
         </StyledMain>
-      </React.Fragment>
+      </>
     );
   }
 }

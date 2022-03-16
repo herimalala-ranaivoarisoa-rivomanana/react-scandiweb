@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import parse from 'html-react-parser';
 
 import _ from "lodash";
 
@@ -60,14 +61,16 @@ class ProductDetails extends Component {
       (item) => item.name !== attribute.name
     );
 
-  const attributeIndex = currentAttributes().indexOf( currentAttributes().find(
-    (item) => item.name === attribute.name
-  ))
-  currentAttributesTemp.splice(attributeIndex, 0,{
-    name: attribute.name, id, value 
-  });
+    const attributeIndex = currentAttributes().indexOf(
+      currentAttributes().find((item) => item.name === attribute.name)
+    );
+    currentAttributesTemp.splice(attributeIndex, 0, {
+      name: attribute.name,
+      id,
+      value,
+    });
 
-  currentAttributes(currentAttributesTemp)
+    currentAttributes(currentAttributesTemp);
     localStorage.setItem(
       "currentAttributes",
       JSON.stringify(currentAttributes())
@@ -89,21 +92,25 @@ class ProductDetails extends Component {
   }
 
   isActiveAttributes(product) {
-    const sortObject = obj => {
+    const sortObject = (obj) => {
       const sorter = (a, b) => {
-         return obj[a] - obj[b];
+        return obj[a] - obj[b];
       };
       const keys = Object.keys(obj);
       keys.sort(sorter);
       const res = {};
-      keys.forEach(key => {
-         res[key] = obj[key];
+      keys.forEach((key) => {
+        res[key] = obj[key];
       });
       return res;
-   };
-    let carts = cartItems().filter(cart=>cart.product.id===product.id && _.isEqual(sortObject(currentAttributes()),sortObject(cart.attributes)) )
-     if (carts.length>0) return true
-     else return false
+    };
+    let carts = cartItems().filter(
+      (cart) =>
+        cart.product.id === product.id &&
+        _.isEqual(sortObject(currentAttributes()), sortObject(cart.attributes))
+    );
+    if (carts.length > 0) return true;
+    else return false;
   }
 
   checkAttributes() {
@@ -143,6 +150,7 @@ class ProductDetails extends Component {
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
     const currentAttributes =
       this.props.getCurrentAttributesQuery.currentAttributes;
+    console.log(product)
     return (
       <Layout>
         <Details>
@@ -168,8 +176,6 @@ class ProductDetails extends Component {
           <DetailsContainer>
             <ImageContainer>
               <Image
-                width='610px'
-                height='511px'
                 srcSet={currentProductDetailsImage() || product.gallery[0]}
                 alt='gallery'
               />
@@ -286,35 +292,36 @@ class ProductDetails extends Component {
                   }
                 </PriceValue>
               </Price>
-              <Link
-                to={`${
-                  product.attributes.length === currentAttributes.length
-                    ? "/products"
-                    : "/product"
-                }`}
-                disabled={true}
-              >
-                <StyledButton
+
+                {product.inStock?<StyledButton
                   onClick={() => {
                     if (
-                      product.attributes.length === currentAttributes.length &&
-                      !this.isActiveAttributes(product)
+                      (product.attributes.length === currentAttributes.length &&
+                      !this.isActiveAttributes(product) &&
+                      product.inStock)|| product.attributes===[]
                     ) {
                       this.addToCart(product, currentAttributes);
                     } else {
                       this.removeFromCart(product);
                     }
                   }}
-                  removing={this.isActiveAttributes(product) ? true : false}
+                  danger={
+                    this.isActiveAttributes(product) || !product.inStock
+                      ? true
+                      : false
+                  }
                 >
                   {this.isActiveAttributes(product)
                     ? "REMOVE FROM CART"
-                    : "ADD TO CART"}
-                </StyledButton>
-              </Link>
-              <Description
-                dangerouslySetInnerHTML={{ __html: product.description }}
-              />
+                    :"ADD TO CART"}
+                </StyledButton>:
+                <OutOfStock>THIS PRODUCT IS OUT OF STOCK</OutOfStock>
+                
+                }
+
+              <Description>
+                {parse(product.description)}
+              </Description>
             </Content>
           </DetailsContainer>
           <GalleryContainer></GalleryContainer>
@@ -378,13 +385,17 @@ const ImageContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: flex-start;
+  width:610px;
+  height:511px.
   margin: 0;
-  width: auto;
 `;
 
 const Image = styled.img`
+  width:610px;
+  height:auto;
   margin-left: 40px;
   margin-right: 100px;
+  object-fit:cover;
 `;
 
 const Content = styled.div`
@@ -513,15 +524,25 @@ line-height: 19.2px;
 line-height: 120%px;
 letter-spacing: 0em;
 text-align: center;
-background-color:${(props) =>
-  props.removing ? "#ff7800" : "var(--c-primary)"};
+background-color:${(props) => (props.danger ? "#ff7800" : "var(--c-primary)")};
 color: var(--c-white);
 border:0;
 margin-bottom:40px;
 cursor:pointer;
 }
-
-`;
+`
+const OutOfStock = styled.div`
+font-family: Raleway-semibold;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: 19.2px;
+line-height: 120%px;
+letter-spacing: 0em;
+text-align: center;
+margin-bottom:40px;
+color:#ff7800;
+`
 
 const Description = styled.div`
   font-family: Roboto;

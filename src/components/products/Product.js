@@ -37,6 +37,12 @@ class Product extends Component {
         value: attribute.items[0].value,
       };
     });
+    cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+    overlay(false);
+    articleCount(articleCount() + 1);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+    localStorage.setItem("overlay", JSON.stringify(overlay()));
+    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
   /*   const cart = cartItems().find(
       (cart) => cart.product.id === product.id
     );
