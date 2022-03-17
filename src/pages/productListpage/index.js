@@ -63,7 +63,6 @@ class ProductsPage extends Component {
           <Pagination>
             {this.state.currentPage > 1 && (
               <li
-                style={{ cursor: "pointer" }}
                 onClick={(e) => {
                   this.setState({ currentPage: this.state.currentPage - 1 });
                 }}
@@ -91,7 +90,7 @@ class ProductsPage extends Component {
             {this.state.currentPage <
               Math.ceil(category.products.length / 6) && (
               <li
-                style={{ cursor: "pointer" }}
+              
                 onClick={(e) => {
                   this.setState({ currentPage: this.state.currentPage + 1 });
                 }}

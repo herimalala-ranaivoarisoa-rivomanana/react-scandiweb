@@ -340,7 +340,7 @@ const AttributeValue = styled.li`
   height: ${(props) => (props.overlay ? "24px" : "45px")};
   display: flex;
   margin-right: 12px;
-  cursor: pointer;
+  cursor: default;
   list-style: none;
   align-items: center;
   border: ${(props) =>
@@ -418,7 +418,7 @@ const CartMiddleOperator = styled.div`
   line-height: 26px;
   letter-spacing: 0em;
   text-align: center;
-  cursor: pointer;
+
 `;
 
 const Gallery = styled.div`
@@ -471,4 +471,5 @@ const CartButton = styled.button`
   border: ${(props) => (props.danger ? "#ff7800" : "1px solid #1d1f22")};
   background-color: ${(props) => (props.danger ? "#ff7800" : "")};
   color: ${(props) => (props.danger ? "#ff7800" : "")};
+  cursor: pointer;
 `;
