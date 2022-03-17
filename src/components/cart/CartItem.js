@@ -392,7 +392,7 @@ const AttributeValueItem = styled.div`
 `;
 const CartMiddle = styled.div`
   width: ${(props) => (props.overlay ? "24px" : "45px")};
-  height:  ${(props) => (props.overlay ? "137px" : "185px")};
+  height: ${(props) => (props.overlay ? "137px" : "185px")};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -400,14 +400,14 @@ const CartMiddle = styled.div`
 `;
 
 const CartMiddleQty = styled.div`
-font-family: Raleway-medium;
-font-size: ${(props) => (props.overlay ? "16px" : "24px")};
-font-style: normal;
-font-weight: 500;
-line-height: ${(props) => (props.overlay ? "26px" : "38px")}; 
-line-height: 160%;
-letter-spacing: 0em;
-text-align: center;
+  font-family: Raleway-medium;
+  font-size: ${(props) => (props.overlay ? "16px" : "24px")};
+  font-style: normal;
+  font-weight: 500;
+  line-height: ${(props) => (props.overlay ? "26px" : "38px")};
+  line-height: 160%;
+  letter-spacing: 0em;
+  text-align: center;
 `;
 
 const CartMiddleOperator = styled.div`
@@ -434,12 +434,13 @@ const Gallery = styled.div`
   &:before {
     content: "";
     position: absolute;
-    top: 0px;
+    top: 14px;
     right: 0px;
-    bottom: 0px;
+    bottom: 14px;
     left: 0px;
     background-image: ${(props) => `URL(${props.url})`};
-    background-size:${props=>props.overlay?"105px auto, cover":"141px auto, cover"} ;
+    background-size: ${(props) =>
+      props.overlay ? "105px auto, cover" : "141px auto, cover"};
     background-repeat: no-repeat;
     opacity: 0.75;
   }
