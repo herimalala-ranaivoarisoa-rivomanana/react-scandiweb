@@ -434,9 +434,9 @@ const Gallery = styled.div`
   &:before {
     content: "";
     position: absolute;
-    top: 14px;
+    top: 8px;
     right: 0px;
-    bottom: 14px;
+    bottom: 8px;
     left: 0px;
     background-image: ${(props) => `URL(${props.url})`};
     background-size: ${(props) =>
