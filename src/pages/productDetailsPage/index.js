@@ -13,6 +13,7 @@ import {
   currentProduct,
   getCurrentAttributesQuery,
   currentProductDetailsImage,
+  getCurrentProductDetailsImageQuery,
   overlay,
   cartItems,
   articleCount,
@@ -139,9 +140,8 @@ class ProductDetails extends Component {
   render() {
     const { currentProduct: product } = this.props.getCurrentProductQuery;
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
-    const currentAttributes =
-      this.props.getCurrentAttributesQuery.currentAttributes;
-    console.log(product);
+    const {currentAttributes} = this.props.getCurrentAttributesQuery;
+    const {currentProductDetailsImage} = this.props.getCurrentProductDetailsImageQuery;
     return (
       <Layout>
         <Details>
@@ -150,26 +150,27 @@ class ProductDetails extends Component {
               return (
                 <Gallery
                   key={im}
+                  url={im}
                   onClick={(e) => {
                     this.changeImage(im);
                   }}
                 >
-                  <GalleryImage
+{/*                   <GalleryImage
                     width='79px'
                     height='80px'
                     srcSet={im}
                     alt='gallery'
-                  />
+                  /> */}
                 </Gallery>
               );
             })}
           </GalleryContainer>
           <DetailsContainer>
-            <ImageContainer>
-              <Image
+            <ImageContainer url={currentProductDetailsImage || product.gallery[0]}>
+{/*               <Image
                 srcSet={currentProductDetailsImage() || product.gallery[0]}
                 alt='gallery'
-              />
+              /> */}
             </ImageContainer>
             <Content>
               <Brand>{product.brand}</Brand>
@@ -196,20 +197,18 @@ class ProductDetails extends Component {
                                     )
                                   }
                                   key={item.id}
+                                  swatch={true}
+                                  isTheAttributeName={ currentAttributes.length > 0 &&
+                                    currentAttributes.find(
+                                      (att) => att.name === attribute.name
+                                    )}
+                                  isTheAttributeId = {currentAttributes.length > 0 && currentAttributes.find(
+                                    (att) => att.name === attribute.name
+                                  ).id === item.id}
+
+                                  swatchColor={item.value}
+
                                   style={{
-                                    width: "54px",
-                                    height: "45px",
-                                    border:
-                                      currentAttributes.length > 0 &&
-                                      currentAttributes.find(
-                                        (att) => att.name === attribute.name
-                                      )
-                                        ? currentAttributes.find(
-                                            (att) => att.name === attribute.name
-                                          ).id === item.id
-                                          ? "2px solid #FA9A53"
-                                          : "1px solid #A6A6A6"
-                                        : "1px solid #A6A6A6",
                                     backgroundColor: item.value,
                                   }}
                                 ></AttributeValue>
@@ -231,8 +230,6 @@ class ProductDetails extends Component {
                                   }
                                   style={{
                                     display: "flex",
-                                    width: "63px",
-                                    height: "45px",
                                     border: " 1px solid #A6A6A6",
                                     color:
                                       currentAttributes.length > 0 &&
@@ -325,18 +322,23 @@ class ProductDetails extends Component {
 export default compose(
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
-  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" })
+  graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" }),
+  graphql(getCurrentProductDetailsImageQuery, { name: "getCurrentProductDetailsImageQuery" })
 )(ProductDetails);
 
-const Details = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
+const ProductPage = styled.div`
   width: 1440px;
   height: 745px;
   margin: auto;
+`;
+const Details = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 1440px;
+  height: 745px;
+  margin:auto;
   margin-top: 80px;
+  padding-left:116px;
 `;
 
 const GalleryContainer = styled.ul`
@@ -344,13 +346,29 @@ const GalleryContainer = styled.ul`
   width: 79px;
 `;
 
-const Gallery = styled.li`
-  margin-bottom: 40px;
-  object-fit: contain;
-  width: 79px;
-  height: 80px;
+const Gallery = styled.div`
   cursor: pointer;
   list-style: none;
+  width:79px;
+  height:80px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-bottom:40px;
+  &:before {
+    content: "";
+    position: absolute;
+    top: -7.61px;
+    right: -3.29px;
+    bottom: -7.61px;
+    left: -3.29px;
+    background-image: ${(props) => `URL(${props.url})`};
+    background-size:79px auto, cover;
+    background-repeat: no-repeat;
+  }
 `;
 
 const GalleryImage = styled.img``;
@@ -365,13 +383,27 @@ const DetailsContainer = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  width:610px;
-  height:511px.
-  margin: 0;
+width:610px;
+height:511px;
+position: relative;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+margin-left:40px;
+margin-right:100px;
+&:before {
+  content: "";
+  position: absolute;
+  top: -48.59px;
+  right: -25.42px;
+  bottom:-48.59px;
+  left: -25.42px;
+  background-image: ${(props) => `URL(${props.url})`};
+  background-size:610px auto, cover;
+  background-repeat: no-repeat;
+}
 `;
 
 const Image = styled.img`
@@ -452,6 +484,9 @@ const AttributeValue = styled.li`
   margin-right: 12px;
   cursor: pointer;
   list-style: none;
+  width:${props=>props.swatch?"54px":"63px"};
+  border:${props=>props.swatch?(props.isTheAttributeName?(props.isTheAttributeId? "2px solid #FA9A53":"1px solid #A6A6A6"):"1px solid #A6A6A6"):"not swatch"};
+  height:45px;
 `;
 
 const AttributeValueItem = styled.div`
