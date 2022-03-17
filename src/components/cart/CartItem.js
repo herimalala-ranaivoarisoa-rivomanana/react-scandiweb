@@ -213,7 +213,6 @@ class CartItem extends Component {
               src='assets/icons/rightArrow.svg'
               onClick={(e) => this.galleryIndexUp(e)}
               alt='gallery'
-              visible={true}
             />
           </ImageNav>
         </Gallery>
