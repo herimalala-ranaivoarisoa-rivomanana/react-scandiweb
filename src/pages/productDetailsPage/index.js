@@ -152,9 +152,10 @@ class ProductDetails extends Component {
   render() {
     const { currentProduct: product } = this.props.getCurrentProductQuery;
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
-    const { currentProductDetailsImage } = this.props.getCurrentProductDetailsImageQuery;
+    const { currentProductDetailsImage } =
+      this.props.getCurrentProductDetailsImageQuery;
     const { currentAttributes } = this.props.getCurrentAttributesQuery;
-    this.isActiveAttributesCheck(product)
+    this.isActiveAttributesCheck(product);
     const { isActiveAttributes } = this.props.getIsActiveAttributesQuery;
     return (
       <Layout>
@@ -214,6 +215,7 @@ class ProductDetails extends Component {
                                   }
                                   key={item.id}
                                   swatch={true}
+                                  swatchColor={item.value}
                                   isTheAttributeName={
                                     currentAttributes.length > 0 &&
                                     currentAttributes.find(
@@ -224,14 +226,12 @@ class ProductDetails extends Component {
                                     currentAttributes.length > 0 &&
                                     currentAttributes.find(
                                       (att) => att.name === attribute.name
-                                    )? currentAttributes.find(
-                                      (att) => att.name === attribute.name
-                                    ).id === item.id:false
-                                  } 
-                                  swatchColor={item.value}
-                                  style={{
-                                    backgroundColor: item.value,
-                                  }}
+                                    )
+                                      ? currentAttributes.find(
+                                          (att) => att.name === attribute.name
+                                        ).id === item.id
+                                      : false
+                                  }
                                 ></AttributeValue>
                               );
                             })}
@@ -250,32 +250,23 @@ class ProductDetails extends Component {
                                     );
                                     this.isActiveAttributesCheck(product);
                                   }}
-                                  style={{
-                                    display: "flex",
-                                    border: " 1px solid #A6A6A6",
-                                    color:
-                                      currentAttributes.length > 0 &&
-                                      currentAttributes.find(
-                                        (att) => att.name === attribute.name
-                                      )
-                                        ? currentAttributes.find(
-                                            (att) => att.name === attribute.name
-                                          ).id === item.id
-                                          ? "var(--c-white)"
-                                          : "#1D1F22"
-                                        : "",
-                                    background:
-                                      currentAttributes.length > 0 &&
-                                      currentAttributes.find(
-                                        (att) => att.name === attribute.name
-                                      )
-                                        ? currentAttributes.find(
-                                            (att) => att.name === attribute.name
-                                          ).id === item.id
-                                          ? "#1D1F22"
-                                          : "var(--c-white)"
-                                        : "",
-                                  }}
+                                  isTheAttributeName={
+                                    currentAttributes.length > 0 &&
+                                    currentAttributes.find(
+                                      (att) => att.name === attribute.name
+                                    )
+                                  }
+                                  isTheAttributeId={
+                                    currentAttributes.length > 0 &&
+                                    currentAttributes.find(
+                                      (att) => att.name === attribute.name
+                                    )
+                                      ? currentAttributes.find(
+                                          (att) => att.name === attribute.name
+                                        ).id === item.id
+                                      : false
+                                  }
+
                                   key={item.id}
                                 >
                                   <AttributeValueItem>
@@ -500,6 +491,7 @@ const AttributeValueList = styled.ul`
 `;
 
 const AttributeValue = styled.li`
+  display: flex;
   margin-right: 12px;
   cursor: pointer;
   list-style: none;
@@ -511,8 +503,17 @@ const AttributeValue = styled.li`
           ? "2px solid #FA9A53"
           : "1px solid #A6A6A6"
         : "1px solid #A6A6A6"
-      : "not swatch"};
+      : " 1px solid #A6A6A6"};
   height: 45px;
+  background-color: ${(props) =>
+    props.swatch
+      ? props.swatchColor
+      : props.isTheAttributeName
+      ? props.isTheAttributeId
+        ? "#1D1F22"
+        : "var(--c-white)"
+      : ""};
+  color:${props=>props.isTheAttributeName?props.isTheAttributeId? "var(--c-white)": "#1D1F22":""}
 `;
 
 const AttributeValueItem = styled.div`
