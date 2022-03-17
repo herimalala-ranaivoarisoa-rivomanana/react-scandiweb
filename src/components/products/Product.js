@@ -74,19 +74,16 @@ class Product extends Component {
     if (product) {
       const inCart = cartItems().find((cart) => cart.product.id === product.id);
       return (
-        <Link
-          style={{ texDecoration: "none", cursor: "default" }}
-          to={`${activeIcon() ? "/" : "../product"}`}
-        >
+        <Link to={`${activeIcon() ? "/" : "../product"}`}>
           <StyledProductCardContainer
             onMouseOver={() => this.setState({ hover: true })}
             onMouseLeave={() => this.setState({ hover: false })}
             overlay={overlay()}
           >
             <ProductCard overlay={overlay()}>
-              <ProductImageContainer>
-                <ProductImage src={product.gallery[0]} alt='Product' />
-              </ProductImageContainer>
+              {/*  <ProductImageContainer> */}
+              <ProductImage url={product.gallery[0]} />
+              {/*   </ProductImageContainer> */}
               <ProductDetails>
                 <ProductName inStock={product.inStock}>
                   {product.name}
@@ -177,7 +174,6 @@ const ProductCard = styled.div`
 `;
 const ProductImageContainer = styled.div`
   overflow: hidden;
-  /*   object-fit: cover; */
   text-align: center;
   width: 354px;
   height: 330px;
@@ -185,11 +181,29 @@ const ProductImageContainer = styled.div`
   background-color: ${(props) => (props.overlay ? "" : " #c4c4c4")};
 `;
 
-const ProductImage = styled.img`
-  object-fit: cover;
-  object-position: center;
+const ProductImage = styled.div`
+  cursor: pointer;
+  list-style: none;
   width: 354px;
   height: 330px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  &:before {
+    content: "";
+    position: absolute;
+    top:-31.38px;
+    right:-14.75px;
+    bottom:-31.38px;
+    left:-14.75px;
+    background-image: ${(props) => `URL(${props.url})`};
+    background-size: 354px auto, cover;
+    background-repeat: no-repeat;
+  }
+  
 `;
 const ProductDetails = styled.div`
   color: #8d8f9a;

@@ -81,10 +81,10 @@ class CartItem extends Component {
         prevState.galleryIndex - 1 > 0 ? prevState.galleryIndex - 1 : 0,
     }));
   }
-  
+
   render() {
     const product = this.props.cart.product;
-    const {currentCurrency} = this.props.getCurrentCurrencyQuery;
+    const { currentCurrency } = this.props.getCurrentCurrencyQuery;
     return (
       <Cart overlay={overlay()}>
         <CartDetails overlay={overlay()}>
@@ -117,20 +117,18 @@ class CartItem extends Component {
                                 swatch={true}
                                 overlay={overlay()}
                                 key={item.id}
-                                style={{
-                                  border:
-                                    this.props.cart.attributes.length > 0 &&
-                                    this.props.cart.attributes.find(
-                                      (att) => att.name === attribute.name
-                                    )
-                                      ? this.props.cart.attributes.find(
-                                          (att) => att.name === attribute.name
-                                        ).id === item.id
-                                        ? "2px solid #FA9A53"
-                                        : "1px solid #A6A6A6"
-                                      : "",
-                                  backgroundColor: item.value,
-                                }}
+                                swatchColor={item.value}
+                                isTheAttributeName={
+                                  this.props.cart.attributes.length > 0 &&
+                                  this.props.cart.attributes.find(
+                                    (att) => att.name === attribute.name
+                                  )
+                                }
+                                isTheAttributeId={
+                                  this.props.cart.attributes.find(
+                                    (att) => att.name === attribute.name
+                                  ).id === item.id
+                                }
                               ></AttributeValue>
                             );
                           })}
@@ -141,52 +139,18 @@ class CartItem extends Component {
                             return (
                               <AttributeValue
                                 overlay={overlay()}
-                                style={{
-                                  color:
-                                    this.props.cart.attributes.length > 0 &&
-                                    this.props.cart.attributes.find(
-                                      (att) => att.name === attribute.name
-                                    )
-                                      ? this.props.cart.attributes.find(
-                                          (att) => att.name === attribute.name
-                                        ).id === item.id
-                                        ? !overlay()
-                                          ? "var(--c-white)"
-                                          : "#1D1F22"
-                                        : overlay()
-                                        ? "#A6A6A6"
-                                        : ""
-                                      : "#1D1F22",
-                                  backgroundColor:
-                                    this.props.cart.attributes.length > 0 &&
-                                    this.props.cart.attributes.find(
-                                      (att) => att.name === attribute.name
-                                    )
-                                      ? this.props.cart.attributes.find(
-                                          (att) => att.name === attribute.name
-                                        ).id === item.id
-                                        ? !overlay()
-                                          ? "#1D1F22"
-                                          : "var(--c-white)"
-                                        : overlay()
-                                        ? "rgba(166, 166, 166, 0.2)"
-                                        : "var(--c-white)"
-                                      : "",
-                                  border:
-                                    this.props.cart.attributes.length > 0 &&
-                                    this.props.cart.attributes.find(
-                                      (att) => att.name === attribute.name
-                                    )
-                                      ? this.props.cart.attributes.find(
-                                          (att) => att.name === attribute.name
-                                        ).id === item.id
-                                        ? overlay()
-                                          ? " 1px solid #1D1F22"
-                                          : " 1px solid #A6A6A6"
-                                        : " 1px solid #A6A6A6"
-                                      : " 1px solid #A6A6A6",
-                                }}
                                 key={item.id}
+                                isTheAttributeName={
+                                  this.props.cart.attributes.length > 0 &&
+                                  this.props.cart.attributes.find(
+                                    (att) => att.name === attribute.name
+                                  )
+                                }
+                                isTheAttributeId={
+                                  this.props.cart.attributes.find(
+                                    (att) => att.name === attribute.name
+                                  ).id === item.id
+                                }
                               >
                                 <AttributeValueItem overlay={overlay()}>
                                   {item.value}
@@ -203,70 +167,71 @@ class CartItem extends Component {
             </AttributesContainer>
           </section>
         </CartDetails>
-          <CartMiddle overlay={overlay()}>
-            <CartMiddleOperator overlay={overlay()}>
-              <CartButton
-                overlay={overlay()}
-                onClick={(e) => this.addQuantity(e, this.props.cart)}
-              >
-                <img
-                  width='12px'
-                  height='12px'
-                  src='assets/icons/plus-line.svg'
-                  alt='Plus'
-                />
-              </CartButton>
-            </CartMiddleOperator>
-            <CartMiddleQty overlay={overlay()}>
-              {this.props.cart.qty}
-            </CartMiddleQty>
-            <CartMiddleOperator overlay={overlay()}>
-              <CartButton
-                overlay={overlay()}
-                onClick={(e) => this.removeQuantity(e, this.props.cart)}
-                style={{
-                  backgroundColor: this.props.cart.qty === 1 ? "#ff7800" : "",
-                  border: this.props.cart.qty === 1 ? "#ff7800" : "",
-                }}
-              >
-                <img
-                  width='12px'
-                  height='12px'
-                  src='assets/icons/minus-line.svg'
-                  alt='minus'
-                />
-              </CartButton>
-            </CartMiddleOperator>
-
-          </CartMiddle>
-          <Gallery overlay={overlay()} url={product.gallery[this.state.galleryIndex]}>
-              <ImageNav overlay={overlay()}>
+        <CartMiddle overlay={overlay()}>
+          <CartMiddleOperator overlay={overlay()}>
+            <CartButton
+              overlay={overlay()}
+              onClick={(e) => this.addQuantity(e, this.props.cart)}
+            >
               <img
-                src='assets/icons/leftArrow.svg'
-                onClick={(e) => this.galleryIndexDown(e)}
-                alt='gallery'
+                width='12px'
+                height='12px'
+                src='assets/icons/plus-line.svg'
+                alt='Plus'
               />
+            </CartButton>
+          </CartMiddleOperator>
+          <CartMiddleQty overlay={overlay()}>
+            {this.props.cart.qty}
+          </CartMiddleQty>
+          <CartMiddleOperator overlay={overlay()}>
+            <CartButton
+              overlay={overlay()}
+              onClick={(e) => this.removeQuantity(e, this.props.cart)}
+              danger={this.props.cart.qty === 1}
+            >
               <img
-                src='assets/icons/rightArrow.svg'
-                onClick={(e) => this.galleryIndexUp(e)}
-                alt='gallery'
-                visible={true}
+                width='12px'
+                height='12px'
+                src='assets/icons/minus-line.svg'
+                alt='minus'
               />
-            </ImageNav>
-          </Gallery>
+            </CartButton>
+          </CartMiddleOperator>
+        </CartMiddle>
+        <Gallery
+          overlay={overlay()}
+          url={product.gallery[this.state.galleryIndex]}
+        >
+          <ImageNav overlay={overlay()}>
+            <img
+              src='assets/icons/leftArrow.svg'
+              onClick={(e) => this.galleryIndexDown(e)}
+              alt='gallery'
+            />
+            <img
+              src='assets/icons/rightArrow.svg'
+              onClick={(e) => this.galleryIndexUp(e)}
+              alt='gallery'
+              visible={true}
+            />
+          </ImageNav>
+        </Gallery>
       </Cart>
     );
   }
 }
 
-export default compose(graphql(getCurrentCurrencyQuery,{name:'getCurrentCurrencyQuery'})) (CartItem);
+export default compose(
+  graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" })
+)(CartItem);
 
 const Cart = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: ${(props) => (props.overlay ? "293px" : "1098px")};
-  min-height:${(props) => (props.overlay ? "137px" : "225px")};
+  min-height: ${(props) => (props.overlay ? "137px" : "225px")};
   margin-bottom: ${(props) => (props.overlay ? "41px" : "0")};
   padding-top: ${(props) => (props.overlay ? "0" : "20px")};
   padding-bottom: ${(props) => (props.overlay ? "0" : "20px")};
@@ -379,6 +344,42 @@ const AttributeValue = styled.li`
   cursor: pointer;
   list-style: none;
   align-items: center;
+  border: ${(props) =>
+    props.swatch
+      ? props.isTheAttributeName
+        ? props.isTheAttributeId
+          ? "2px solid #FA9A53"
+          : "1px solid #A6A6A6"
+        : ""
+      : props.isTheAttributeName
+      ? props.isTheAttributeId
+        ? props.overlay
+          ? " 1px solid #1D1F22"
+          : "1px solid #A6A6A6"
+        : "1px solid #A6A6A6"
+      : ""};
+  background-color: ${(props) =>
+    props.swatch
+      ? props.swatchColor
+      : props.isTheAttributeName
+      ? props.isTheAttributeId
+        ? !props.overlay
+          ? "#1D1F22"
+          : "var(--c-white)"
+        : props.overlay
+        ? "rgba(166, 166, 166, 0.2)"
+        : "var(--c-white)"
+      : ""};
+  color: ${(props) =>
+    props.isTheAttributeName
+      ? props.isTheAttributeId
+        ? !props.overlay
+          ? "var(--c-white)"
+          : "#1D1F22"
+        : props.overlay
+        ? "#A6A6A6"
+        : "#A6A6A6"
+      : ""};
 `;
 
 const AttributeValueItem = styled.div`
@@ -390,20 +391,9 @@ const AttributeValueItem = styled.div`
   letter-spacing: 0em;
   margin: auto;
 `;
-
-const CartRight = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: ${(props) => (props.overlay ? "139px" : "198px")};
-  height: ${(props) => (props.overlay ? "137px" : "185px")};
-  vertical-align: middle;
-`;
-
 const CartMiddle = styled.div`
   width: ${(props) => (props.overlay ? "24px" : "45px")};
-  height: 137px;
+  height:  ${(props) => (props.overlay ? "137px" : "185px")};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -411,8 +401,14 @@ const CartMiddle = styled.div`
 `;
 
 const CartMiddleQty = styled.div`
-  margin-top: ${(props) => (props.overlay ? "34px" : "36px")};
-  margin-bottom: ${(props) => (props.overlay ? "34px" : "36px")};
+font-family: Raleway-medium;
+font-size: ${(props) => (props.overlay ? "16px" : "24px")};
+font-style: normal;
+font-weight: 500;
+line-height: ${(props) => (props.overlay ? "26px" : "38px")}; 
+line-height: 160%;
+letter-spacing: 0em;
+text-align: center;
 `;
 
 const CartMiddleOperator = styled.div`
@@ -428,24 +424,26 @@ const CartMiddleOperator = styled.div`
 
 const Gallery = styled.div`
   width: ${(props) => (props.overlay ? "105px" : "141px")};
-  height:${(props) => (props.overlay ? "137px" : "141px")};
+  height: ${(props) => (props.overlay ? "137px" : "185px")};
   margin-left: ${(props) => (props.overlay ? "10px" : "12px")};
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  &:before{
-    content:'';
-    position:absolute;
-    top:0px;
-    right:0px;
-    bottom:0px;
-    left:0px;
-    background-image:${props=>`URL(${props.url})`};
-    background-size: 105px auto, cover;
-    background-repeat:no-repeat;
-    opacity:0.75;  }
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-image: ${(props) => `URL(${props.url})`};
+    background-size:${props=>props.overlay?"105px auto, cover":"141px auto, cover"} ;
+    background-repeat: no-repeat;
+    opacity: 0.75;
+  }
 `;
 
 const ImageNav = styled.div`
@@ -454,13 +452,13 @@ const ImageNav = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-    & img {  
+  & img {
     margin-left: 9px;
     margin-right: 9px;
     cursor: pointer;
     color: white;
     mix-blend-mode: difference;
-  } 
+  }
 `;
 
 const CartButton = styled.button`
@@ -470,5 +468,7 @@ const CartButton = styled.button`
   justify-content: center;
   align-items: center;
   background-color: var(--c-white);
-  border: 1px solid #1d1f22;
+  border: ${(props) => (props.danger ? "#ff7800" : "1px solid #1d1f22")};
+  background-color: ${(props) => (props.danger ? "#ff7800" : "")};
+  color: ${(props) => (props.danger ? "#ff7800" : "")};
 `;

@@ -20,11 +20,7 @@ class NavCategory extends Component {
           {data.categories.map((category) => {
             const active = currentCategory() === category.name ? true : false;
             return (
-              <Link
-                style={{ textDecoration: "none" }}
-                to='/products'
-                key={category.name}
-              >
+              <Link to='/products' key={category.name}>
                 <SyledCategoriesListItem
                   active={active}
                   onClick={(e) => this.setCategory(category.name)}

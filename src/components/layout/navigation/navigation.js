@@ -33,7 +33,6 @@ class Navigation extends Component {
             const active = currentCategory() === category.name ? true : false;
             return (
               <Link
-                style={{ textDecoration: "none" }}
                 to='/products'
                 key={category.name}
               >

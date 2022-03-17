@@ -62,6 +62,7 @@ const CurrencyList = styled.div`
   position: absolute;
   top: 65px;
   left: 1360px;
+  right:-34px;
   z-index: 200;
   display: flex;
   flex-direction: column;
