@@ -44,11 +44,6 @@ class ProductDetails extends Component {
     );
   }
 
-  printDescription() {
-    const product = currentProduct();
-    return product.description;
-  }
-
   setAttributes(e, attribute, id, value) {
     e.preventDefault();
     const currentAttributesTemp = currentAttributes().filter(
@@ -78,7 +73,7 @@ class ProductDetails extends Component {
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-    this.isActiveAttributesCheck(product)
+    this.isActiveAttributesCheck(product);
   }
 
   isActiveAttributesCheck(product) {
@@ -99,9 +94,12 @@ class ProductDetails extends Component {
         cart.product.id === product.id &&
         _.isEqual(sortObject(currentAttributes()), sortObject(cart.attributes))
     );
-    if (carts.length > 0) isActiveAttributes(true)
-    else isActiveAttributes(false)
-    localStorage.setItem("isActiveAttributes", JSON.stringify(isActiveAttributes()));
+    if (carts.length > 0) isActiveAttributes(true);
+    else isActiveAttributes(false);
+    localStorage.setItem(
+      "isActiveAttributes",
+      JSON.stringify(isActiveAttributes())
+    );
   }
 
   checkAttributes() {
@@ -148,16 +146,16 @@ class ProductDetails extends Component {
     articleCount(articleCount() - carts[0].qty);
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
-    this.isActiveAttributesCheck(product)
+    this.isActiveAttributesCheck(product);
   }
 
   render() {
     const { currentProduct: product } = this.props.getCurrentProductQuery;
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
-    const { currentAttributes } = this.props.getCurrentAttributesQuery;
     const { currentProductDetailsImage } = this.props.getCurrentProductDetailsImageQuery;
-    const {isActiveAttributes} = this.props.getIsActiveAttributesQuery;
-    console.log(isActiveAttributes)
+    const { currentAttributes } = this.props.getCurrentAttributesQuery;
+    this.isActiveAttributesCheck(product)
+    const { isActiveAttributes } = this.props.getIsActiveAttributesQuery;
     return (
       <Layout>
         <Details>
@@ -226,8 +224,10 @@ class ProductDetails extends Component {
                                     currentAttributes.length > 0 &&
                                     currentAttributes.find(
                                       (att) => att.name === attribute.name
-                                    ).id === item.id
-                                  }
+                                    )? currentAttributes.find(
+                                      (att) => att.name === attribute.name
+                                    ).id === item.id:false
+                                  } 
                                   swatchColor={item.value}
                                   style={{
                                     backgroundColor: item.value,
@@ -241,17 +241,15 @@ class ProductDetails extends Component {
                             {attribute.items.map((item) => {
                               return (
                                 <AttributeValue
-                                  onClick={(e) =>{
+                                  onClick={(e) => {
                                     this.setAttributes(
                                       e,
                                       attribute,
                                       item.id,
                                       item.value
-                                    )
-                                    this.isActiveAttributesCheck(product)
-                                  
-                                  }
-                                  }
+                                    );
+                                    this.isActiveAttributesCheck(product);
+                                  }}
                                   style={{
                                     display: "flex",
                                     border: " 1px solid #A6A6A6",
@@ -310,7 +308,7 @@ class ProductDetails extends Component {
                   onClick={() => {
                     if (
                       (product.attributes.length === currentAttributes.length &&
-                       !isActiveAttributes &&
+                        !isActiveAttributes &&
                         product.inStock) ||
                       product.attributes === []
                     ) {
@@ -319,15 +317,9 @@ class ProductDetails extends Component {
                       this.removeFromCart(product);
                     }
                   }}
-                  danger={
-                    isActiveAttributes || !product.inStock
-                      ? true
-                      : false
-                  }
+                  danger={isActiveAttributes || !product.inStock ? true : false}
                 >
-                  {isActiveAttributes
-                    ? "REMOVE FROM CART"
-                    : "ADD TO CART"}
+                  {isActiveAttributes ? "REMOVE FROM CART" : "ADD TO CART"}
                 </StyledButton>
               ) : (
                 <OutOfStock>THIS PRODUCT IS OUT OF STOCK</OutOfStock>
@@ -343,12 +335,14 @@ class ProductDetails extends Component {
   }
 }
 
-export default compose( 
+export default compose(
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
   graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" }),
-  graphql(getCurrentProductDetailsImageQuery, {name: "getCurrentProductDetailsImageQuery"}),
-  graphql(getIsActiveAttributesQuery, {name: "getIsActiveAttributesQuery"}),
+  graphql(getCurrentProductDetailsImageQuery, {
+    name: "getCurrentProductDetailsImageQuery",
+  }),
+  graphql(getIsActiveAttributesQuery, { name: "getIsActiveAttributesQuery" })
 )(ProductDetails);
 
 const ProductPage = styled.div`
