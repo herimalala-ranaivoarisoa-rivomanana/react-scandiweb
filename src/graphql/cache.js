@@ -9,6 +9,7 @@ import {
   amount,
   articleCount,
   currentAttributes,
+  isActiveAttributes,
   openCurrency,
   activeIcon
 } from "./reactivities/state";
@@ -42,6 +43,11 @@ export default new InMemoryCache({
         currentAttributes: {
           read() {
             return currentAttributes();
+          },
+        },
+        isActiveAttributes: {
+          read() {
+            return isActiveAttributes();
           },
         },
         currentProductDetailsImage: {

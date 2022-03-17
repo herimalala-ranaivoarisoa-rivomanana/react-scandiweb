@@ -25,6 +25,10 @@ export const currentAttributes = makeVar(
   JSON.parse(localStorage.getItem("currentAttributes")) || []
 );
 
+export const isActiveAttributes = makeVar(
+  JSON.parse(localStorage.getItem("isActiveAttributes")) || false
+);
+
 export const overlay = makeVar(
   JSON.parse(localStorage.getItem("overlay")) || false
 );
@@ -64,6 +68,12 @@ export const getCartItemsQuery = gql`
 export const getCurrentAttributesQuery = gql`
   query getCurrentAttributes {
     currentAttributes @client
+  }
+`;
+
+export const getIsActiveAttributesQuery = gql`
+  query getisActiveAttributes {
+    isActiveAttributes @client
   }
 `;
 

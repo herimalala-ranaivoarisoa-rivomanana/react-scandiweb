@@ -10,14 +10,16 @@ import compose from "lodash.flowright";
 import {
   getCurrentCurrencyQuery,
   getCurrentProductQuery,
-  currentProduct,
-  getCurrentAttributesQuery,
-  currentProductDetailsImage,
   getCurrentProductDetailsImageQuery,
+  getCurrentAttributesQuery,
+  getIsActiveAttributesQuery,
+  currentProduct,
+  currentProductDetailsImage,
+  currentAttributes,
+  isActiveAttributes,
   overlay,
   cartItems,
   articleCount,
-  currentAttributes,
 } from "../../graphql/reactivities/state";
 
 import Layout from "../../components/layout/Layout";
@@ -73,17 +75,13 @@ class ProductDetails extends Component {
     cartItems([...cartItems(), { product, attributes, qty: 1 }]);
     overlay(false);
     articleCount(articleCount() + 1);
-    currentAttributes([]);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-    localStorage.setItem(
-      "currentAttributes",
-      JSON.stringify(currentAttributes())
-    );
+    this.isActiveAttributesCheck(product)
   }
 
-  isActiveAttributes(product) {
+  isActiveAttributesCheck(product) {
     const sortObject = (obj) => {
       const sorter = (a, b) => {
         return obj[a] - obj[b];
@@ -101,8 +99,9 @@ class ProductDetails extends Component {
         cart.product.id === product.id &&
         _.isEqual(sortObject(currentAttributes()), sortObject(cart.attributes))
     );
-    if (carts.length > 0) return true;
-    else return false;
+    if (carts.length > 0) isActiveAttributes(true)
+    else isActiveAttributes(false)
+    localStorage.setItem("isActiveAttributes", JSON.stringify(isActiveAttributes()));
   }
 
   checkAttributes() {
@@ -125,23 +124,40 @@ class ProductDetails extends Component {
   }
 
   removeFromCart(product) {
-    articleCount(
-      articleCount() -
-        cartItems().find((cart) => cart.product.id === product.id).qty
+    const sortObject = (obj) => {
+      const sorter = (a, b) => {
+        return obj[a] - obj[b];
+      };
+      const keys = Object.keys(obj);
+      keys.sort(sorter);
+      const res = {};
+      keys.forEach((key) => {
+        res[key] = obj[key];
+      });
+      return res;
+    };
+    let carts = cartItems().filter(
+      (cart) =>
+        cart.product.id === product.id &&
+        _.isEqual(sortObject(currentAttributes()), sortObject(cart.attributes))
     );
-    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
-    const cartItemsTemp = cartItems().filter(
-      (cart) => cart.product.id !== product.id
-    );
+    let cartItemsTemp = cartItems();
+    const index = cartItems().indexOf(carts[0]);
+    cartItemsTemp.splice(index, 1);
     cartItems(cartItemsTemp);
+    articleCount(articleCount() - carts[0].qty);
+    localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
+    this.isActiveAttributesCheck(product)
   }
 
   render() {
     const { currentProduct: product } = this.props.getCurrentProductQuery;
     const { currentCurrency: currency } = this.props.getCurrentCurrencyQuery;
-    const {currentAttributes} = this.props.getCurrentAttributesQuery;
-    const {currentProductDetailsImage} = this.props.getCurrentProductDetailsImageQuery;
+    const { currentAttributes } = this.props.getCurrentAttributesQuery;
+    const { currentProductDetailsImage } = this.props.getCurrentProductDetailsImageQuery;
+    const {isActiveAttributes} = this.props.getIsActiveAttributesQuery;
+    console.log(isActiveAttributes)
     return (
       <Layout>
         <Details>
@@ -155,7 +171,7 @@ class ProductDetails extends Component {
                     this.changeImage(im);
                   }}
                 >
-{/*                   <GalleryImage
+                  {/*                   <GalleryImage
                     width='79px'
                     height='80px'
                     srcSet={im}
@@ -166,8 +182,10 @@ class ProductDetails extends Component {
             })}
           </GalleryContainer>
           <DetailsContainer>
-            <ImageContainer url={currentProductDetailsImage || product.gallery[0]}>
-{/*               <Image
+            <ImageContainer
+              url={currentProductDetailsImage || product.gallery[0]}
+            >
+              {/*               <Image
                 srcSet={currentProductDetailsImage() || product.gallery[0]}
                 alt='gallery'
               /> */}
@@ -198,16 +216,19 @@ class ProductDetails extends Component {
                                   }
                                   key={item.id}
                                   swatch={true}
-                                  isTheAttributeName={ currentAttributes.length > 0 &&
+                                  isTheAttributeName={
+                                    currentAttributes.length > 0 &&
                                     currentAttributes.find(
                                       (att) => att.name === attribute.name
-                                    )}
-                                  isTheAttributeId = {currentAttributes.length > 0 && currentAttributes.find(
-                                    (att) => att.name === attribute.name
-                                  ).id === item.id}
-
+                                    )
+                                  }
+                                  isTheAttributeId={
+                                    currentAttributes.length > 0 &&
+                                    currentAttributes.find(
+                                      (att) => att.name === attribute.name
+                                    ).id === item.id
+                                  }
                                   swatchColor={item.value}
-
                                   style={{
                                     backgroundColor: item.value,
                                   }}
@@ -220,13 +241,16 @@ class ProductDetails extends Component {
                             {attribute.items.map((item) => {
                               return (
                                 <AttributeValue
-                                  onClick={(e) =>
+                                  onClick={(e) =>{
                                     this.setAttributes(
                                       e,
                                       attribute,
                                       item.id,
                                       item.value
                                     )
+                                    this.isActiveAttributesCheck(product)
+                                  
+                                  }
                                   }
                                   style={{
                                     display: "flex",
@@ -286,7 +310,7 @@ class ProductDetails extends Component {
                   onClick={() => {
                     if (
                       (product.attributes.length === currentAttributes.length &&
-                        !this.isActiveAttributes(product) &&
+                       !isActiveAttributes &&
                         product.inStock) ||
                       product.attributes === []
                     ) {
@@ -296,12 +320,12 @@ class ProductDetails extends Component {
                     }
                   }}
                   danger={
-                    this.isActiveAttributes(product) || !product.inStock
+                    isActiveAttributes || !product.inStock
                       ? true
                       : false
                   }
                 >
-                  {this.isActiveAttributes(product)
+                  {isActiveAttributes
                     ? "REMOVE FROM CART"
                     : "ADD TO CART"}
                 </StyledButton>
@@ -319,11 +343,12 @@ class ProductDetails extends Component {
   }
 }
 
-export default compose(
+export default compose( 
   graphql(getCurrentCurrencyQuery, { name: "getCurrentCurrencyQuery" }),
   graphql(getCurrentProductQuery, { name: "getCurrentProductQuery" }),
   graphql(getCurrentAttributesQuery, { name: "getCurrentAttributesQuery" }),
-  graphql(getCurrentProductDetailsImageQuery, { name: "getCurrentProductDetailsImageQuery" })
+  graphql(getCurrentProductDetailsImageQuery, {name: "getCurrentProductDetailsImageQuery"}),
+  graphql(getIsActiveAttributesQuery, {name: "getIsActiveAttributesQuery"}),
 )(ProductDetails);
 
 const ProductPage = styled.div`
@@ -336,9 +361,9 @@ const Details = styled.div`
   flex-direction: row;
   width: 1440px;
   height: 745px;
-  margin:auto;
+  margin: auto;
   margin-top: 80px;
-  padding-left:116px;
+  padding-left: 116px;
 `;
 
 const GalleryContainer = styled.ul`
@@ -349,15 +374,15 @@ const GalleryContainer = styled.ul`
 const Gallery = styled.div`
   cursor: pointer;
   list-style: none;
-  width:79px;
-  height:80px;
+  width: 79px;
+  height: 80px;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  margin-bottom:40px;
+  margin-bottom: 40px;
   &:before {
     content: "";
     position: absolute;
@@ -366,7 +391,7 @@ const Gallery = styled.div`
     bottom: -7.61px;
     left: -3.29px;
     background-image: ${(props) => `URL(${props.url})`};
-    background-size:79px auto, cover;
+    background-size: 79px auto, cover;
     background-repeat: no-repeat;
   }
 `;
@@ -383,27 +408,27 @@ const DetailsContainer = styled.div`
 `;
 
 const ImageContainer = styled.div`
-width:610px;
-height:511px;
-position: relative;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-overflow: hidden;
-margin-left:40px;
-margin-right:100px;
-&:before {
-  content: "";
-  position: absolute;
-  top: -48.59px;
-  right: -25.42px;
-  bottom:-48.59px;
-  left: -25.42px;
-  background-image: ${(props) => `URL(${props.url})`};
-  background-size:610px auto, cover;
-  background-repeat: no-repeat;
-}
+  width: 610px;
+  height: 511px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-left: 40px;
+  margin-right: 100px;
+  &:before {
+    content: "";
+    position: absolute;
+    top: -48.59px;
+    right: -25.42px;
+    bottom: -48.59px;
+    left: -25.42px;
+    background-image: ${(props) => `URL(${props.url})`};
+    background-size: 610px auto, cover;
+    background-repeat: no-repeat;
+  }
 `;
 
 const Image = styled.img`
@@ -484,9 +509,16 @@ const AttributeValue = styled.li`
   margin-right: 12px;
   cursor: pointer;
   list-style: none;
-  width:${props=>props.swatch?"54px":"63px"};
-  border:${props=>props.swatch?(props.isTheAttributeName?(props.isTheAttributeId? "2px solid #FA9A53":"1px solid #A6A6A6"):"1px solid #A6A6A6"):"not swatch"};
-  height:45px;
+  width: ${(props) => (props.swatch ? "54px" : "63px")};
+  border: ${(props) =>
+    props.swatch
+      ? props.isTheAttributeName
+        ? props.isTheAttributeId
+          ? "2px solid #FA9A53"
+          : "1px solid #A6A6A6"
+        : "1px solid #A6A6A6"
+      : "not swatch"};
+  height: 45px;
 `;
 
 const AttributeValueItem = styled.div`
