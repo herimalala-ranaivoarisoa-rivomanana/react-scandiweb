@@ -336,11 +336,6 @@ export default compose(
   graphql(getIsActiveAttributesQuery, { name: "getIsActiveAttributesQuery" })
 )(ProductDetails);
 
-const ProductPage = styled.div`
-  width: 1440px;
-  height: 745px;
-  margin: auto;
-`;
 const Details = styled.div`
   display: flex;
   flex-direction: row;
@@ -381,7 +376,6 @@ const Gallery = styled.div`
   }
 `;
 
-const GalleryImage = styled.img``;
 
 const DetailsContainer = styled.div`
   display: flex;
@@ -414,14 +408,6 @@ const ImageContainer = styled.div`
     background-size: 610px auto, cover;
     background-repeat: no-repeat;
   }
-`;
-
-const Image = styled.img`
-  width: 610px;
-  height: auto;
-  margin-left: 40px;
-  margin-right: 100px;
-  object-fit: cover;
 `;
 
 const Content = styled.div`
