@@ -1,17 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import Cart from "../cart";
 import Header from "./header/Header";
 import Navigation from "./navigation/navigation";
 
 import {
   getOpenCurrencyQuery,
   overlay,
-  openCurrency,
 } from "../../graphql/reactivities/state";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
-import Currency from "../currencies/Currency";
 
 class Layout extends Component {
   render() {
@@ -19,8 +16,6 @@ class Layout extends Component {
       <>
         <Header>
           <Navigation />
-          {openCurrency() && <Currency />}
-          {overlay() && <Cart overlay={overlay()} />}
         </Header>
         <StyledMain overlay={overlay()}>
           {this.props.children}

@@ -128,13 +128,11 @@ class Product extends Component {
               />
             </CartIcon>
 
-            <LeaveWhiteBrooch inStock={product.inStock}>
               <Mask inStock={product.inStock}>
                 <OutOfStock>
                   <OutOfStockText>OUT OF STOCK</OutOfStockText>
                 </OutOfStock>
               </Mask>
-            </LeaveWhiteBrooch>
           </StyledProductCardContainer>
         </Link>
       );
@@ -172,14 +170,6 @@ const ProductCard = styled.div`
   height: 412px;
   background-color: ${(props) => (props.overlay ? "" : "#FFFFFF")};
 `;
-const ProductImageContainer = styled.div`
-  overflow: hidden;
-  text-align: center;
-  width: 354px;
-  height: 330px;
-  margin-bottom: 24px;
-  background-color: ${(props) => (props.overlay ? "" : " #c4c4c4")};
-`;
 
 const ProductImage = styled.div`
   cursor: pointer;
@@ -192,18 +182,20 @@ const ProductImage = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background-color:#C4C4C4;
+  margin-bottom:24px;
   &:before {
     content: "";
     position: absolute;
-    top:-31.38px;
-    right:-14.75px;
-    bottom:-31.38px;
-    left:-14.75px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
     background-image: ${(props) => `URL(${props.url})`};
-    background-size: 354px auto, cover;
+    background-size: 356px auto, cover;
     background-repeat: no-repeat;
+    opacity: 0.9;
   }
-  
 `;
 const ProductDetails = styled.div`
   color: #8d8f9a;
@@ -288,27 +280,19 @@ const AddToCartIconImage = styled.img`
   margin-bottom: 15.5px;
 `;
 
-const LeaveWhiteBrooch = styled.div`
+const Mask = styled.div`
   position: relative;
+  justify-content: center;
+  align-items: center;
+  top: -448px;
+  left: 14.5px;
   display: ${(props) => (props.inStock ? "none" : "flex")};
   justify-content: center;
   align-items: center;
-  top: -452px;
-  left: 15px;
   width: 356px;
-  height: 338px;
-  background-color: #ffffff;
-  opacity: 50%;
-  z-index: 20;
-`;
-
-const Mask = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 354px;
   height: 330px;
-  background-color: #c4c4c4;
+  background-color: #FFFFFF;
+  opacity:50%;
 `;
 
 const OutOfStock = styled.div`

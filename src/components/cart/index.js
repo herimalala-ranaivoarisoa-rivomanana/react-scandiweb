@@ -50,10 +50,7 @@ class Cart extends Component {
     cartItems().map((item) => articleCount(articleCount() + item.qty));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
     return (
-      <ClickAwayListener
-        nodeRef={this.nodebtn}
-        onClickAway={this.leaveOverlay}
-      >
+      <ClickAwayListener nodeRef={this.nodebtn} onClickAway={this.leaveOverlay}>
         <CardContainer className='overlay' overlay={overlay()}>
           {!overlay() && <PageTitle overlay={overlay()}>CART</PageTitle>}
           {overlay() && (
@@ -72,25 +69,29 @@ class Cart extends Component {
               );
             })}
           </Content>
-          {overlay() && (
-            <Amount>
-              <AmountLabel>Total</AmountLabel>
-              <AmountValue>
-                {currentCurrency().symbol}
-                {amount().toFixed(2)}
-              </AmountValue>
-            </Amount>
-          )}
-          {overlay() && (
-            <CtaContainer>
-              <Link to='/cart'>
-                <CtaCart onClick={this.leaveOverlay}>VIEW BAG</CtaCart>
-              </Link>
-              <Link to='/checkout'>
-                <CtaCheckout onClick={this.leaveOverlay}>CHECK OUT</CtaCheckout>
-              </Link>
-            </CtaContainer>
-          )}
+          <div>
+            {overlay() && (
+              <Amount>
+                <AmountLabel>Total</AmountLabel>
+                <AmountValue>
+                  {currentCurrency().symbol}
+                  {amount().toFixed(2)}
+                </AmountValue>
+              </Amount>
+            )}
+            {overlay() && (
+              <CtaContainer>
+                <Link to='/cart'>
+                  <CtaCart onClick={this.leaveOverlay}>VIEW BAG</CtaCart>
+                </Link>
+                <Link to='/checkout'>
+                  <CtaCheckout onClick={this.leaveOverlay}>
+                    CHECK OUT
+                  </CtaCheckout>
+                </Link>
+              </CtaContainer>
+            )}
+          </div>
         </CardContainer>
       </ClickAwayListener>
     );
@@ -102,17 +103,18 @@ export default compose(graphql(getAmountQuery, { name: "getAmountQuery" }))(
 );
 
 const CardContainer = styled.div`
-  position: ${(props) => (props.overlay ? "absolute" : "")};
+  position: ${(props) => (props.overlay ? "relative" : "")};
   z-index: ${(props) => (props.overlay ? "100" : "0")};
-  top: ${(props) => (props.overlay ? "80px" : "")};
-  left: ${(props) => (props.overlay ? "1140px" : "")};
+  top: ${(props) => (props.overlay ? "56px" : "")};
+  left: ${(props) => (props.overlay ? "680px" : "")};
   width: ${(props) => (props.overlay ? "325px" : "1440px")};
   display: flex;
   flex-direction: column;
   background-color: white;
   margin: auto;
-  /* margin-bottom:200px; */
-  padding-bottom: 20px;
+  padding:8px 0px 20px 16px;
+/*   padding-top: 8px;
+  padding-bottom: 20px; */
 `;
 
 const PageTitle = styled.div`
@@ -164,9 +166,9 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: left;
-  align-items: center;
-  width: ${(props) => (props.overlay ? "325px" : "1098px")};
-  margin: auto;
+  width: ${(props) => (props.overlay ? "309px" : "1098px")};
+  max-height: ${(props) => (props.overlay ? "540px" : "")};
+  overflow-y:${(props) => (props.overlay ? "auto" : "")};
   margin-left: ${(props) => (props.overlay ? "" : "101px")};
   margin-right: ${(props) => (props.overlay ? "" : "101px")};
 `;
@@ -179,6 +181,7 @@ const Amount = styled.div`
   width: 293px;
   height: 20px;
   margin: auto;
+  margin-top:20px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

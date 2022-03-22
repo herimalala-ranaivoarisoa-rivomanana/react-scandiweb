@@ -16,6 +16,8 @@ import {
   currentAttributes,
   cartItems,
 } from "../../../graphql/reactivities/state";
+import Cart from "../../cart";
+import Currency from "../../currencies/Currency";
 
 class Navigation extends Component {
   constructor(props) {
@@ -45,6 +47,9 @@ class Navigation extends Component {
               </Link>
             );
           })}
+                    {openCurrency() && <Currency />}
+                    {overlay() && <Cart overlay={overlay()} />}
+
         </CategoriesList>
       );
   }

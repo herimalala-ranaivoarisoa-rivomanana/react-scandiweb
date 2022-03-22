@@ -59,9 +59,9 @@ export default compose(
 )(Currency);
 
 const CurrencyList = styled.div`
-  position: absolute;
-  top: 65px;
-  left: 1360px;
+  position: relative;
+  top:65px;
+  left:910px;
   right:-34px;
   z-index: 200;
   display: flex;

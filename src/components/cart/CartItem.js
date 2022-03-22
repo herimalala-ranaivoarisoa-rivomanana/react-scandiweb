@@ -91,8 +91,8 @@ class CartItem extends Component {
           <ProductBrand overlay={overlay()}>{product.brand}</ProductBrand>
           <ProductName overlay={overlay()}>{product.name}</ProductName>
           <Price overlay={overlay()}>
-            <PriceCurrency>{currentCurrency.symbol}</PriceCurrency>
-            <PriceAmount>
+            <PriceCurrency  overlay={overlay()}>{currentCurrency.symbol}</PriceCurrency>
+            <PriceAmount  overlay={overlay()}>
               {
                 product.prices.find(
                   (price) => price.currency.label === currentCurrency.label

@@ -161,12 +161,6 @@ const CategoryName = styled.div`
 `;
 
 const ProductsListContainer = styled.ul`
-  /*   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  width: 1440px; */
   width: 1240px;
   margin: auto;
   margin-top: 102px;
@@ -184,6 +178,7 @@ const Pagination = styled.div`
   align-items: center;
   & li {
     list-style: none;
+    cursor:pointer;
   }
 `;
 const Pages = styled.li`
