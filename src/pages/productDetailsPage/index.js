@@ -67,9 +67,40 @@ class ProductDetails extends Component {
   }
 
   addToCart(product, attributes) {
-    cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+    const sortObject = (obj) => {
+      const sorter = (a, b) => {
+        return obj[a] - obj[b];
+      };
+      const keys = Object.keys(obj);
+      keys.sort(sorter);
+      const res = {};
+      keys.forEach((key) => {
+        res[key] = obj[key];
+      });
+      return res;
+    };
+    let carts = cartItems().filter(
+      (cart) =>
+        cart.product.id === product.id &&
+        _.isEqual(sortObject(attributes), sortObject(cart.attributes))
+    );
+
+    if (carts.length === 0) {
+      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+      articleCount(articleCount() + 1);
+    }
+    else{
+      const index = cartItems().indexOf(carts[0]);
+      let cartItemsTemp = cartItems();
+      cartItemsTemp.splice(index, 1,{
+        product,
+        attributes,
+        qty:carts[0].qty+1
+      });
+      cartItems(cartItemsTemp)
+      articleCount(articleCount() + 1);
+    }
     overlay(false);
-    articleCount(articleCount() + 1);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
@@ -156,7 +187,6 @@ class ProductDetails extends Component {
       this.props.getCurrentProductDetailsImageQuery;
     const { currentAttributes } = this.props.getCurrentAttributesQuery;
     this.isActiveAttributesCheck(product);
-    const { isActiveAttributes } = this.props.getIsActiveAttributesQuery;
     return (
       <Layout>
         <Details>
@@ -266,7 +296,6 @@ class ProductDetails extends Component {
                                         ).id === item.id
                                       : false
                                   }
-
                                   key={item.id}
                                 >
                                   <AttributeValueItem>
@@ -298,19 +327,14 @@ class ProductDetails extends Component {
                 <StyledButton
                   onClick={() => {
                     if (
-                      (product.attributes.length === currentAttributes.length &&
-                        !isActiveAttributes &&
-                        product.inStock) ||
-                      product.attributes === []
+                      product.attributes.length === currentAttributes.length &&
+                      product.inStock
                     ) {
                       this.addToCart(product, currentAttributes);
-                    } else {
-                      this.removeFromCart(product);
                     }
                   }}
-                  danger={isActiveAttributes || !product.inStock ? true : false}
                 >
-                  {isActiveAttributes ? "REMOVE FROM CART" : "ADD TO CART"}
+                  ADD TO CART
                 </StyledButton>
               ) : (
                 <OutOfStock>THIS PRODUCT IS OUT OF STOCK</OutOfStock>
@@ -363,6 +387,7 @@ const Gallery = styled.div`
   align-items: center;
   overflow: hidden;
   margin-bottom: 40px;
+  background-color:#C4C4C4;
   &:before {
     content: "";
     position: absolute;
@@ -373,9 +398,10 @@ const Gallery = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 79px auto, cover;
     background-repeat: no-repeat;
+    background-color:white;
+    opacity: 0.9;
   }
 `;
-
 
 const DetailsContainer = styled.div`
   display: flex;
@@ -397,6 +423,7 @@ const ImageContainer = styled.div`
   overflow: hidden;
   margin-left: 40px;
   margin-right: 100px;
+  background-color:#C4C4C4;
   &:before {
     content: "";
     position: absolute;
@@ -407,6 +434,8 @@ const ImageContainer = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 610px auto, cover;
     background-repeat: no-repeat;
+    background-color:white;
+    opacity: 0.9;
   }
 `;
 
@@ -499,7 +528,12 @@ const AttributeValue = styled.li`
         ? "#1D1F22"
         : "var(--c-white)"
       : ""};
-  color:${props=>props.isTheAttributeName?props.isTheAttributeId? "var(--c-white)": "#1D1F22":""}
+  color: ${(props) =>
+    props.isTheAttributeName
+      ? props.isTheAttributeId
+        ? "var(--c-white)"
+        : "#1D1F22"
+      : ""};
 `;
 
 const AttributeValueItem = styled.div`
@@ -556,7 +590,7 @@ line-height: 19.2px;
 line-height: 120%px;
 letter-spacing: 0em;
 text-align: center;
-background-color:${(props) => (props.danger ? "#ff7800" : "var(--c-primary)")};
+background-color:var(--c-primary);
 color: var(--c-white);
 border:0;
 margin-bottom:40px;

@@ -431,18 +431,20 @@ const Gallery = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background-color:#C4C4C4;
   &:before {
     content: "";
     position: absolute;
-    top: 8px;
+    top: 0px;
     right: 0px;
-    bottom: 8px;
+    bottom: 0px;
     left: 0px;
     background-image: ${(props) => `URL(${props.url})`};
     background-size: ${(props) =>
       props.overlay ? "105px auto, cover" : "141px auto, cover"};
     background-repeat: no-repeat;
-    opacity: 0.75;
+    background-color:white;
+    opacity:0.8;
   }
 `;
 
@@ -457,7 +459,7 @@ const ImageNav = styled.div`
     margin-right: 9px;
     cursor: pointer;
     color: white;
-    mix-blend-mode: difference;
+    mix-blend-mode:difference;
   }
 `;
 

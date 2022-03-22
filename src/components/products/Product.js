@@ -194,6 +194,7 @@ const ProductImage = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 356px auto, cover;
     background-repeat: no-repeat;
+    background-color:white;
     opacity: 0.9;
   }
 `;

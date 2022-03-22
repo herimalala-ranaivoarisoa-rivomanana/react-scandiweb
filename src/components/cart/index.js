@@ -110,11 +110,10 @@ const CardContainer = styled.div`
   width: ${(props) => (props.overlay ? "325px" : "1440px")};
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background-color: white;
   margin: auto;
-  padding:8px 0px 20px 16px;
-/*   padding-top: 8px;
-  padding-bottom: 20px; */
+  padding:8px 16px 20px 16px;
 `;
 
 const PageTitle = styled.div`
@@ -168,7 +167,8 @@ const Content = styled.div`
   justify-content: left;
   width: ${(props) => (props.overlay ? "309px" : "1098px")};
   max-height: ${(props) => (props.overlay ? "540px" : "")};
-  overflow-y:${(props) => (props.overlay ? "auto" : "")};
+  overflow-y:auto;
+  overflow-x:hidden;
   margin-left: ${(props) => (props.overlay ? "" : "101px")};
   margin-right: ${(props) => (props.overlay ? "" : "101px")};
 `;
