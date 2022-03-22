@@ -313,9 +313,9 @@ const AttributesList = styled.li`
 
 const AttributeName = styled.div`
   font-family: Roboto-condensed-bold;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
   line-height: 85%;
   letter-spacing: 0em;
   text-align: left;
