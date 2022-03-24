@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import styled from "styled-components";
 
 import { Link } from "react-router-dom";
@@ -37,9 +38,40 @@ class Product extends Component {
         value: attribute.items[0].value,
       };
     });
-    cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+
+    const sortObject = (obj) => {
+      const sorter = (a, b) => {
+        return obj[a] - obj[b];
+      };
+      const keys = Object.keys(obj);
+      keys.sort(sorter);
+      const res = {};
+      keys.forEach((key) => {
+        res[key] = obj[key];
+      });
+      return res;
+    };
+    let carts = cartItems().filter(
+      (cart) =>
+        cart.product.id === product.id &&
+        _.isEqual(sortObject(attributes), sortObject(cart.attributes))
+    );
+    if (carts.length === 0) {
+      cartItems([...cartItems(), { product, attributes, qty: 1 }]);
+      articleCount(articleCount() + 1);
+    }
+    else{
+      const index = cartItems().indexOf(carts[0]);
+      let cartItemsTemp = cartItems();
+      cartItemsTemp.splice(index, 1,{
+        product,
+        attributes,
+        qty:carts[0].qty+1
+      });
+      cartItems(cartItemsTemp)
+      articleCount(articleCount() + 1);
+    }
     overlay(false);
-    articleCount(articleCount() + 1);
     localStorage.setItem("cartItems", JSON.stringify(cartItems()));
     localStorage.setItem("overlay", JSON.stringify(overlay()));
     localStorage.setItem("articleCount", JSON.stringify(articleCount()));
@@ -109,8 +141,7 @@ class Product extends Component {
               hover={this.state.hover}
               onMouseOver={() => activeIcon(true)}
               onMouseLeave={() => activeIcon(false)}
-              onClick={() =>
-                inCart ? this.removeFromCart(product) : this.addToCart(product)
+              onClick={() =>this.addToCart(product)
               }
             >
               <AddToCartIconImage
@@ -120,8 +151,8 @@ class Product extends Component {
                 src={`${
                   inCart
                     ? activeIcon()
-                      ? "assets/icons/cart/basket-.svg"
-                      : "assets/icons/cart/emptycart1.svg"
+                      ?"assets/icons/cart/emptycart1.svg"
+                      :"assets/icons/cart/emptycart1.svg"
                     : "assets/icons/cart/emptycart1.svg"
                 }`}
                 alt=''
@@ -182,7 +213,7 @@ const ProductImage = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color:#C4C4C4;
+  background-color:transparent;
   margin-bottom:24px;
   &:before {
     content: "";
@@ -194,7 +225,7 @@ const ProductImage = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 356px auto, cover;
     background-repeat: no-repeat;
-    background-color:white;
+    background-color:transparent;
     opacity: 0.9;
   }
 `;
@@ -252,8 +283,7 @@ left:303px;
 width:52px;
 height:52px;
 z-index:20;
-background-color:#5ECE7B;/* ${(props) =>
-  props.inCart ? (props.hover ? "#ff7800 " : "#5ECE7B") : "#5ECE7B"}; */
+background-color:#5ECE7B;
 visibility:${(props) =>
   props.inStock
     ? !props.inCart
@@ -267,7 +297,7 @@ visibility:${(props) =>
 filter:	drop-shadow(0px	4px	11px rgba(29, 31, 34, 0.1));
 cursor:pointer; 
 &:hover{
-  background-color:${(props) => (props.inCart ? "#ff7800 " : "#5ECE7B")};
+  background-color:#5ECE7B;
   }
 }
 `;

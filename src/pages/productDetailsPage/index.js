@@ -387,7 +387,7 @@ const Gallery = styled.div`
   align-items: center;
   overflow: hidden;
   margin-bottom: 40px;
-  background-color:#C4C4C4;
+  background-color:transparent;
   &:before {
     content: "";
     position: absolute;
@@ -398,7 +398,7 @@ const Gallery = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 79px auto, cover;
     background-repeat: no-repeat;
-    background-color:white;
+    background-color:transparent;
     opacity: 0.9;
   }
 `;
@@ -423,7 +423,7 @@ const ImageContainer = styled.div`
   overflow: hidden;
   margin-left: 40px;
   margin-right: 100px;
-  background-color:#C4C4C4;
+  background-color:transparent;
   &:before {
     content: "";
     position: absolute;
@@ -434,7 +434,7 @@ const ImageContainer = styled.div`
     background-image: ${(props) => `URL(${props.url})`};
     background-size: 610px auto, cover;
     background-repeat: no-repeat;
-    background-color:white;
+    background-color:transparent;
     opacity: 0.9;
   }
 `;

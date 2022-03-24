@@ -431,7 +431,7 @@ const Gallery = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color:#C4C4C4;
+  background-color:transparent;
   &:before {
     content: "";
     position: absolute;
@@ -443,7 +443,7 @@ const Gallery = styled.div`
     background-size: ${(props) =>
       props.overlay ? "105px auto, cover" : "141px auto, cover"};
     background-repeat: no-repeat;
-    background-color:white;
+    background-color:transparent;
     opacity:0.8;
   }
 `;
