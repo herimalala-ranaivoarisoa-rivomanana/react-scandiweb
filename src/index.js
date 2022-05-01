@@ -7,7 +7,7 @@ import cache from "./graphql/cache";
 import { ApolloClient, ApolloProvider } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: "graphql-react-endpoint-8pfi60eyf.vercel.app",
+  uri: "https://react-0.herokuapp.com/grapghql",
   cache,
   connectToDevTools: true,
 });
